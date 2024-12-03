@@ -15,6 +15,7 @@ class SerialConnection:
         self.__serial_connection()
         print("Serial communication initialized")
         self.start_threads()
+        self.send_delay = 0.02
 
     def __serial_connection(self) -> bool:
         """Makes the connection with the microcontroller"""
@@ -35,7 +36,7 @@ class SerialConnection:
                             selected_port = port
                             break
                 print("Selected microcontroller COM port: " + str(selected_port))
-                self.__serial = serial.Serial(selected_port, 9600, timeout=1,
+                self.__serial = serial.Serial(selected_port, 9600, timeout=0.1,
                                               stopbits=serial.STOPBITS_ONE, bytesize=serial.EIGHTBITS)
                 time.sleep(3)
             if not self.__serial.is_open:
@@ -55,7 +56,9 @@ class SerialConnection:
     def send_message(self, command: str) -> None:
         """Send a message via serial"""
         if self.__serial_connection():
-            self.__serial.write(command.encode())
+            for char in command:
+                self.__serial.write(char.encode())
+                time.sleep(self.send_delay)
 
     def read_message(self) -> None:
         """Receive a message via serial"""
@@ -65,6 +68,8 @@ class SerialConnection:
                     char = self.__serial.read(1)  # read one byte at a time
                     if char:
                         print("Received:", char.decode(errors='ignore'), flush=True)
+                        # time.sleep(self.send_delay/2)
+                        # self.__serial.flushInput()
             except serial.SerialException as e:
                 print("Serial exception:", e)
 

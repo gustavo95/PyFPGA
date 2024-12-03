@@ -4,7 +4,7 @@
 <!-- Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.                   -->
 <!-- Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.   -->
 
-<Project Product="Vivado" Version="7" Minor="67" Path="C:/Users/gusta/Documents/Doutorado_UFRN/Disciplinas/Projeto de pesquisa 2/PyFPGA/PyFPGA.xpr">
+<Project Product="Vivado" Version="7" Minor="67" Path="C:/Users/gusta/Documents/Doutorado_UFRN/Disciplinas/Projeto de pesquisa 2/PyFPGA/FPGA/PyFPGA.xpr">
   <DefaultLaunch Dir="$PRUNDIR"/>
   <Configuration>
     <Option Name="Id" Val="d7e50568ccaa49aebbb85ba3bcb4156d"/>

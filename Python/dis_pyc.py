@@ -77,7 +77,7 @@ def exibir_bytecode(code_object):
     # print("Código Bytecode:", list(code_object.co_code))
     # print("Arquivo de Origem:", code_object.co_filename)
     # decode_opcodes(list(code_object.co_code))
-    # dis.dis(code_object)
+    dis.dis(code_object)
     
 def ler_int(f):
     bytes_lidos = f.read(4)
@@ -188,4 +188,4 @@ code_obj = ler_pyc(caminho_arquivo_pyc)
 print("\nBytecode:")
 exibir_bytecode(code_obj)
 
-decodificar_pyc("./Teste/__pycache__/helloworld.cpython-311.pyc")
+# decodificar_pyc("./Teste/__pycache__/helloworld.cpython-311.pyc")

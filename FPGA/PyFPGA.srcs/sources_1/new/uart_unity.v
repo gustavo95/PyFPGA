@@ -63,6 +63,30 @@ module uart_unity
     wire tx_fifo_not_empty;             // Tx FIFO contains data to transmit
     wire [DBITS-1:0] tx_fifo_out;       // from Tx FIFO to UART transmitter
     wire [DBITS-1:0] rx_data_out;       // from UART receiver to Rx FIFO
+
+    reg enable_write_uart;              // enable write to Tx FIFO
+    reg write_set;                    // reset write to Tx FIFO
+
+    // UART Write 1 clk_100MHz tick
+    always @ (posedge clk_100MHz or posedge reset) begin
+        if (reset) begin
+            enable_write_uart <= 0;
+            write_set <= 0;
+        end
+        else begin
+            if (write_uart && !write_set) begin
+                enable_write_uart <= 1;
+                write_set <= 1;
+            end
+            else if (!write_uart) begin
+                write_set <= 0;
+                enable_write_uart <= 0;
+            end
+            else begin
+                enable_write_uart <= 0;
+            end
+        end
+    end
     
     // Instantiate Modules for UART Core
     baud_rate_generator 
@@ -134,7 +158,7 @@ module uart_unity
          (
             .clk(clk_100MHz),
             .reset(reset),
-            .write_to_fifo(write_uart),
+            .write_to_fifo(enable_write_uart),
 	        .read_from_fifo(tx_done_tick),
 	        .write_data_in(write_data),
 	        .read_data_out(tx_fifo_out),
