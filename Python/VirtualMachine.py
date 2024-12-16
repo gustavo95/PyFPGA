@@ -19,7 +19,7 @@ class VirtualMachine:
         instructions = dis.get_instructions(code_obj)
         for instr in instructions:
             self.dispatch(instr.opname, instr.arg, instr.argval)
-            print(self.stack)
+            print(instr.opname, instr.arg, instr.argval, self.stack)
 
     def dispatch(self, opname, arg, argval):
         if opname == 'RESUME':
@@ -35,9 +35,29 @@ class VirtualMachine:
             a, _ = self.pop()
             if argval == 0:
                 self.push(a + b)
+            elif argval == 10:
+                self.push(a - b)
+            elif argval == 5:
+                self.push(a * b)
+            elif argval == 11:
+                self.push(a / b)
+            elif argval == 2:
+                self.push(a // b)
+            elif argval == 6:
+                self.push(a % b)
+            elif argval == 4:
+                self.push(a @ b)
+            elif argval == 8:
+                self.push(a ** b)
+            else:
+                print(f"Operação binaria não implementada: {opname} {argval}")
+                raise NotImplementedError
         elif opname == 'RETURN_VALUE':
-            #Imprime o valor do topo da pilha
+            #Imprime o valor do topo da pilha como retorno
             print(f"Return: {self.pop()}")
+        elif opname == 'RETURN_CONST':
+            #Imprime o valor do argumento como retorno
+            print(f"Return: {argval}")
         elif opname == 'STORE_NAME':
             #Tira da pilha o valor e coloca no dicionário de nomes
             value, _ = self.pop()
