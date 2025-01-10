@@ -30,6 +30,7 @@ module top(
     output LD0,
     output LD1,
     output LD2,
+    output [1:0] comm_ctrl_state,
     
     // Diplay 7
     output [7:0] Hex,
@@ -44,15 +45,16 @@ module top(
     reg [15:0] clk_div;
     
     // UART wires and regs
-    reg uart_read_tick;
+    wire uart_read_tick;
+    wire uart_write_tick;
     wire rx_full, rx_empty;
     wire [7:0] uart_rec_data;
-    reg [7:0] uart_send_data;
+    wire [7:0] uart_send_data;
     reg [7:0] ticks;
 
 
     // display7 wires and regs
-    reg [7:0] hex_byte1;
+    wire [7:0] hex_byte1;
 
     assign LD0 = RESET;
     assign LD1 = rx_full;
@@ -82,17 +84,6 @@ module top(
         else
             clk_div <= clk_div + 1;
     end
-    
-    always @(posedge clk_div[15]) begin
-        if (!rx_empty && !uart_read_tick) begin
-            hex_byte1 <= uart_rec_data;
-            uart_send_data <= uart_rec_data;
-            uart_read_tick <= 1;
-        end
-        else begin
-            uart_read_tick <= 0;
-        end
-    end
 
     always @(posedge clk_div[15] or posedge RESET) begin
         if (RESET) begin
@@ -110,7 +101,7 @@ module top(
         .clk_1KHz(clk_div[15]),
         .reset(RESET),
         .byte1(hex_byte1),
-        .byte2(ticks),
+        .byte2(uart_rec_data),
         .Hex(Hex),
         .Hex_select(Hex_select)
     );
@@ -120,13 +111,27 @@ module top(
         .clk_100MHz(CLK),
         .reset(RESET),
         .read_uart(uart_read_tick),
-        .write_uart(uart_read_tick),
+        .write_uart(uart_write_tick),
         .rx(uart_rx),
         .write_data(uart_send_data),
         .rx_full(rx_full),
         .rx_empty(rx_empty),
         .read_data(uart_rec_data),
         .tx(uart_tx)
+    );
+
+    // Communication controller
+    communication_controller comm_ctrl(
+        .CLK(CLK),
+        .RESET(RESET),
+        .uart_rec_data(uart_rec_data),
+        .rx_full(rx_full),
+        .rx_empty(rx_empty),
+        .uart_read_tick(uart_read_tick),
+        .uart_write_tick(uart_write_tick),
+        .uart_send_data(uart_send_data),
+        .state(comm_ctrl_state),
+        .debug(hex_byte1)
     );
     
 endmodule

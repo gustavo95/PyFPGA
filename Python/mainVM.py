@@ -11,7 +11,7 @@ def load_pyc(file_path):
     return code_obj
 
 file_path = "./Teste/helloworld.py"
-path_pyc = "./Teste/__pycache__/helloworld.cpython-313.pyc"
+path_pyc = "./Teste/__pycache__/helloworld.cpython-311.pyc"
 
 py_compile.compile(file_path)
 
