@@ -53,12 +53,11 @@ class SerialConnection:
             self.__serial = None
             return self.__serial_connection() 
 
-    def send_message(self, command: str) -> None:
+    def send_message(self, command: int) -> None:
         """Send a message via serial"""
         if self.__serial_connection():
-            for char in command:
-                self.__serial.write(char.encode())
-                time.sleep(self.send_delay)
+            self.__serial.write(command)
+            time.sleep(self.send_delay)
 
     def read_message(self) -> None:
         """Receive a message via serial"""
@@ -67,7 +66,7 @@ class SerialConnection:
                 while not self.__stop_threads:
                     char = self.__serial.read(1)  # read one byte at a time
                     if char:
-                        print("Received:", char.decode(errors='ignore'), flush=True)
+                        print("Received:", char.decode(errors='ignore'), hex(char[0]), flush=True)
                         # time.sleep(self.send_delay/2)
                         # self.__serial.flushInput()
             except serial.SerialException as e:
@@ -90,7 +89,96 @@ class SerialConnection:
             if command.lower() == 'exit':
                 self.close_serial()  # Close the serial and stop the program
                 break
-            self.send_message(command)
+            # self.send_message(command.encode())
+            # # Send start
+            self.send_message(b'\x30')
+            
+            input("continue?")
+            
+            # Send resume
+            self.send_message(b'\x97')
+            self.send_message(b'\x01')
+            self.send_message(b'\x00')
+            self.send_message(b'\x00')
+            self.send_message(b'\x01')
+            self.send_message(b'\x04')
+            self.send_message(b'\x00')
+            self.send_message(b'\x00')
+            self.send_message(b'\x00')
+            self.send_message(b'\x00')
+            
+            input("continue?")
+            
+            # Send load_name
+            self.send_message(b'\x65')
+            self.send_message(b'\x01')
+            self.send_message(b'\x00')
+            self.send_message(b'\x00')
+            self.send_message(b'\x05')
+            self.send_message(b'\x04')
+            self.send_message(b'\x00')
+            self.send_message(b'\x00')
+            self.send_message(b'\x00')
+            self.send_message(b'\x01')
+            
+            input("continue?")
+            
+            # Send load_const
+            self.send_message(b'\x64')
+            self.send_message(b'\x01')
+            self.send_message(b'\x00')
+            self.send_message(b'\x01')
+            self.send_message(b'\x01')
+            self.send_message(b'\x04')
+            self.send_message(b'\x00')
+            self.send_message(b'\x00')
+            self.send_message(b'\x00')
+            self.send_message(b'\x02')
+            
+            input("continue?")
+            
+            # Send load_const
+            self.send_message(b'\x64')
+            self.send_message(b'\x01')
+            self.send_message(b'\x00')
+            self.send_message(b'\x02')
+            self.send_message(b'\x01')
+            self.send_message(b'\x04')
+            self.send_message(b'\x00')
+            self.send_message(b'\x00')
+            self.send_message(b'\x00')
+            self.send_message(b'\x03')
+            
+            input("continue?")
+            
+            # Send binary_op
+            self.send_message(b'\x7A')
+            self.send_message(b'\x01')
+            self.send_message(b'\x00')
+            self.send_message(b'\x00')
+            self.send_message(b'\x01')
+            self.send_message(b'\x04')
+            self.send_message(b'\x00')
+            self.send_message(b'\x00')
+            self.send_message(b'\x00')
+            self.send_message(b'\x00')
+            
+            input("continue?")
+            
+            # Send call
+            self.send_message(b'\xAB')
+            self.send_message(b'\x01')
+            self.send_message(b'\x00')
+            self.send_message(b'\x01')
+            self.send_message(b'\x01')
+            self.send_message(b'\x04')
+            self.send_message(b'\x00')
+            self.send_message(b'\x00')
+            self.send_message(b'\x00')
+            self.send_message(b'\x01')
+            
+            
+            
 
     def close_serial(self) -> None:
         """Close serial connection and stop threads"""

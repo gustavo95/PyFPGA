@@ -19,7 +19,12 @@ class VirtualMachine:
         instructions = dis.get_instructions(code_obj)
         for instr in instructions:
             self.dispatch(instr.opname, instr.arg, instr.argval)
-            print(instr.opname, instr.arg, instr.argval, self.stack)
+            print(
+                f"{instr.opname} (0x{instr.opcode:02x})",  # Nome e código hexadecimal do opcode
+                instr.arg,                                # Argumento numérico (se aplicável)
+                instr.argval,                             # Valor associado ao argumento (se aplicável)
+                self.stack                                # Estado atual da pilha
+            )
 
     def dispatch(self, opname, arg, argval):
         if opname == 'RESUME':

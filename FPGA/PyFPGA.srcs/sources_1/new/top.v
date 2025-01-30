@@ -30,7 +30,11 @@ module top(
     output LD0,
     output LD1,
     output LD2,
-    output [1:0] comm_ctrl_state,
+    output LD3,
+    output LD4,
+    output LD5,
+    output LD6,
+    output LD15,
     
     // Diplay 7
     output [7:0] Hex,
@@ -52,14 +56,50 @@ module top(
     wire [7:0] uart_send_data;
     reg [7:0] ticks;
 
-
     // display7 wires and regs
     wire [7:0] hex_byte1;
 
+    // Other wires and regs
+    wire [4:0] comm_ctrl_state;
+
+    // Opcode FIFO wires and regs
+    wire comm_ctrl_fifo_pop;
+    wire comm_ctrl_fifo_save;
+    wire [7:0] comm_ctrl_opcode;
+    wire [7:0] comm_ctrl_arg_type;
+    wire [15:0] comm_ctrl_arg_value;
+    wire [7:0] comm_ctrl_argval_type;
+    wire [7:0] comm_ctrl_argval_len;
+    wire [63:0] comm_ctrl_argval_value;
+    wire comm_ctrl_fifo_full;
+    wire comm_ctrl_fifo_empty;
+    wire [63:0] comm_ctrl_print_value;
+    wire comm_ctrl_print_empty;
+    wire comm_ctrl_print_pop;
+
+    // Python VM wires and regs
+    wire [7:0] vm_opcode;
+    wire [7:0] vm_arg_type;
+    wire [15:0] vm_arg_value;
+    wire [7:0] vm_argval_type;
+    wire [7:0] vm_argval_len;
+    wire [63:0] vm_argval_value;
+    wire [1:0] vm_state;
+    wire [7:0] vm_debug;
+    wire vm_error;
+    wire vm_print;
+    wire [63:0] vm_print_value;
+    wire vm_print_full;
+
+    // Assignments
     assign LD0 = RESET;
     assign LD1 = rx_full;
     assign LD2 = rx_empty;
-    // assign uart_send_data = 8'b0;
+    assign LD3 = comm_ctrl_fifo_empty;
+    assign LD4 = comm_ctrl_fifo_full;
+    assign LD5 = comm_ctrl_fifo_save;
+    assign LD6 = comm_ctrl_fifo_pop;
+    assign LD15 = vm_error;
     
     // Clock divider
         // clk_div[0]  - Frequency = 50 MHz        | Period = 20 ns
@@ -100,8 +140,8 @@ module top(
     display7 d7(
         .clk_1KHz(clk_div[15]),
         .reset(RESET),
-        .byte1(hex_byte1),
-        .byte2(uart_rec_data),
+        .byte1(vm_opcode),
+        .byte2(vm_debug),
         .Hex(Hex),
         .Hex_select(Hex_select)
     );
@@ -127,11 +167,75 @@ module top(
         .uart_rec_data(uart_rec_data),
         .rx_full(rx_full),
         .rx_empty(rx_empty),
+        .fifo_is_full(comm_ctrl_fifo_full),
+        .print_fifo_is_empty(comm_ctrl_print_empty),
+        .print_value(comm_ctrl_print_value),
         .uart_read_tick(uart_read_tick),
         .uart_write_tick(uart_write_tick),
         .uart_send_data(uart_send_data),
         .state(comm_ctrl_state),
-        .debug(hex_byte1)
+        .debug(hex_byte1),
+        .opcode(comm_ctrl_opcode),
+        .arg_type(comm_ctrl_arg_type),
+        .arg_value(comm_ctrl_arg_value),
+        .argval_type(comm_ctrl_argval_type),
+        .argval_len(comm_ctrl_argval_len),
+        .argval_value(comm_ctrl_argval_value),
+        .save_in_fifo(comm_ctrl_fifo_save),
+        .print_pop(comm_ctrl_print_pop)
+    );
+
+    // Opcode FIFO
+    opcode_fifo fifo(
+        .CLK(CLK),
+        .RESET(RESET),
+        .fifo_pop(comm_ctrl_fifo_pop),
+        .fifo_save(comm_ctrl_fifo_save),
+        .opcode_in(comm_ctrl_opcode),
+        .arg_type_in(comm_ctrl_arg_type),
+        .arg_value_in(comm_ctrl_arg_value),
+        .argval_type_in(comm_ctrl_argval_type),
+        .argval_len_in(comm_ctrl_argval_len),
+        .argval_in(comm_ctrl_argval_value),
+        .fifo_full(comm_ctrl_fifo_full),
+        .fifo_empty(comm_ctrl_fifo_empty),
+        .opcode_out(vm_opcode),
+        .arg_type_out(vm_arg_type),
+        .arg_value_out(vm_arg_value),
+        .argval_type_out(vm_argval_type),
+        .argval_len_out(vm_argval_len),
+        .argval_out(vm_argval_value)
+    );
+
+    // Python VM
+    pyvm vm(
+        .CLK(CLK),
+        .RESET(RESET),
+        .fifo_is_empty(comm_ctrl_fifo_empty),
+        .opcode(vm_opcode),
+        .arg_type(vm_arg_type),
+        .arg_value(vm_arg_value),
+        .argval_type(vm_argval_type),
+        .argval_len(vm_argval_len),
+        .argval_value(vm_argval_value),
+        .print_fifo_is_full(vm_print_full),
+        .vm_state(vm_state),
+        .fifo_pop(comm_ctrl_fifo_pop),
+        .debug(vm_debug),
+        .error_vm(vm_error),
+        .print(vm_print),
+        .print_value(vm_print_value)
+    );
+
+    print_fifo print_fifo(
+        .CLK(CLK),
+        .RESET(RESET),
+        .fifo_pop(comm_ctrl_print_pop),
+        .fifo_save(vm_print),
+        .argval_in(vm_print_value),
+        .fifo_full(vm_print_full),
+        .fifo_empty(comm_ctrl_print_empty),
+        .argval_out(comm_ctrl_print_value)
     );
     
 endmodule
