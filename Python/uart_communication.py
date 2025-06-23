@@ -84,6 +84,9 @@ class SerialConnection:
 
     def write_loop(self):
         """Continuously prompt for user input to send to the serial port"""
+        
+        first_send = True
+        
         while not self.__stop_threads:
             command = input("Enter a command to send (or 'exit' to close): ")
             if command.lower() == 'exit':
@@ -91,7 +94,10 @@ class SerialConnection:
                 break
             # self.send_message(command.encode())
             # # Send start
-            self.send_message(b'\x30')
+            
+            if first_send:
+                self.send_message(b'\x30')
+                first_send = False
             
             input("continue?")
             

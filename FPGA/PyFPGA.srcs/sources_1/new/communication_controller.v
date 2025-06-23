@@ -62,12 +62,13 @@ module communication_controller(
     localparam READ_ARGVAL_LEN_2 = 5'd14;
     localparam READ_ARGVAL_1 = 5'd15;
     localparam READ_ARGVAL_2 = 5'd16;
-    localparam PRINT_ARGVAL_1 = 5'd17;
-    localparam PRINT_ARGVAL_2 = 5'd18;
+    localparam READ_FIFO = 5'd17;
+    localparam PRINT_ARGVAL_1 = 5'd18;
+    localparam PRINT_ARGVAL_2 = 5'd19;
 
     reg [7:0] read_data;
     reg [7:0] argval_len_aux;
-    reg [3:0] print_count;
+    reg [7:0] print_count;
 
     always @(posedge CLK or posedge RESET) begin
         if (RESET) begin
@@ -85,7 +86,7 @@ module communication_controller(
             argval_type <= 8'b0;
             argval_len <= 8'b0;
             argval_value <= 64'b0;
-            print_count <= 4'd8;
+            print_count <= 8'd7;
             print_pop <= 1'b0;
         end else begin
             case (state)
@@ -111,9 +112,9 @@ module communication_controller(
                 REQUEST_BYTECODE: begin
                     save_in_fifo <= 1'b0;
                     if (!print_fifo_is_empty) begin
-                        print_count <= 4'd8;
+                        print_count <= 8'd7;
                         print_pop <= 1'b1;
-                        state <= PRINT_ARGVAL_1;
+                        state <= READ_FIFO;
                     end
                     else if (!fifo_is_full) begin
                         uart_send_data <= 8'h05;
@@ -226,7 +227,7 @@ module communication_controller(
                 READ_ARGVAL_2: begin
                     uart_read_tick <= 1'b0;
                     debug <= read_data;
-                    argval_value[argval_len_aux * 8 +: 8] <= read_data;
+                    argval_value[(argval_len_aux << 3) +: 8] <= read_data;
                     if (argval_len_aux <= 8'b0) begin
                         save_in_fifo <= 1'b1;
                         state <= REQUEST_BYTECODE;
@@ -234,17 +235,23 @@ module communication_controller(
                         state <= READ_ARGVAL_1;
                     end
                 end
+                READ_FIFO: begin
+                    print_pop <= 1'b0;
+                    state <= PRINT_ARGVAL_1;
+                    // print_count <= print_count - 1'b1;
+                end
                 PRINT_ARGVAL_1: begin
                     print_pop <= 1'b0;
+                    uart_send_data <= print_value[(print_count << 3) +: 8];
+                    // uart_send_data <= print_value[7:0];
                     print_count <= print_count - 1'b1;
-                    // uart_send_data <= print_value[(print_count-1'b1) * 8 +: 8];
-                    uart_send_data <= 8'hff;
                     uart_write_tick <= 1'b1;
                     state <= PRINT_ARGVAL_2;
                 end
                 PRINT_ARGVAL_2: begin
                     uart_write_tick <= 1'b0;
-                    if (print_count == 4'b0) begin
+                    debug <= print_count;
+                    if (print_count <= 8'd0) begin
                         state <= REQUEST_BYTECODE;
                     end else begin
                         state <= PRINT_ARGVAL_1;

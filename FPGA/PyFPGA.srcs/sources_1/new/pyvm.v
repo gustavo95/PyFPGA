@@ -298,7 +298,7 @@ module pyvm(
                     if (!print_fifo_is_full) begin
                         print <= 1'b1;
                         // print_value <= op_a;
-                        print_value <= 8'hff;
+                        print_value <= 8'haa;
                         vm_state <= WAIT_FIFO;
                     end
                 end
