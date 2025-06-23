@@ -29,7 +29,10 @@ class SerialConnection:
                 ports = sorted(ports)
                 selected_port = None
                 if "win" in sys.platform:
-                    selected_port = ports[0][0]
+                    for port, desc, hwid in ports:
+                        if ("USB Serial Port" in desc):
+                            selected_port = port
+                            break                  
                 else:
                     for port, desc, hwid in ports:
                         if "ttyACM" in desc:
