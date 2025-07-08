@@ -20,48 +20,122 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module quad_spi_master(
-    input wire clk,               // Clock input
-    input wire reset,             // Reset signal
-    input wire [7:0] data_in,     // 8-bit data input
-    output wire [7:0] data_out,   // 8-bit data output
-    output wire sclk,             // SPI clock output
-    output wire cs,               // Chip Select output
-    inout wire dq0,               // Data line 0 (SDI/DQ0)
-    inout wire dq1,               // Data line 1 (SDO/DQ1)
-    inout wire dq2,               // Data line 2 (WP/DQ2)
-    inout wire dq3                // Data line 3 (HOLD/DQ3)
-    );
+module quad_spi_masterinput(
+    input wire clk,          // clock do sistema
+    input  wire reset,
+    input  wire start,        // sinal de início
+    output reg  done,         // sinal de fim
+    output reg [7:0] id_out,
 
-    // Internal signals
-    reg [7:0] shift_reg;          // Shift register for data transmission
-    reg [2:0] bit_count;          // Bit counter for SPI communication
-    reg dq0_out, dq1_out, dq2_out, dq3_out; // Output control for DQ lines
-    reg dq0_in, dq1_in, dq2_in, dq3_in;     // Input control for DQ lines
+    // SPI sinais
+    output reg sck,
+    output reg cs_n,
+    output reg mosi,
+    input  wire miso
+);
 
-    // Assign bidirectional DQ lines
-    assign dq0 = dq0_out ? 1'bz : dq0_in;
-    assign dq1 = dq1_out ? 1'bz : dq1_in;
-    assign dq2 = dq2_out ? 1'bz : dq2_in;
-    assign dq3 = dq3_out ? 1'bz : dq3_in;
+    reg [7:0] tx_buffer [0:0];  // apenas 1 byte: o comando 0x9F
+    reg [2:0] rx_index = 0;     // para 3 bytes
+    reg [7:0] rx_shift;
+    reg [7:0] rx_data [0:3];
+    reg [2:0] bit_cnt;
 
-    // SPI communication logic
+    reg [3:0] state;
+    localparam IDLE   = 0,
+               ASSERT = 1,
+               SEND   = 2,
+               RECV   = 3,
+               DONE   = 4;
+
+    reg [3:0] clk_div;
+    wire tick = (clk_div == 4);  // ajusta aqui para sua velocidade de SPI
+
     always @(posedge clk or posedge reset) begin
         if (reset) begin
-            shift_reg <= 8'b00000000;
-            bit_count <= 3'b000;
-            dq0_out <= 1'b1; // Set DQ lines to high impedance
-            dq1_out <= 1'b1;
-            dq2_out <= 1'b1;
-            dq3_out <= 1'b1;
+            clk_div <= 0;
         end else begin
-            // Implement Quad SPI logic here
-            // Example: Shift data in/out using DQ lines
+            clk_div <= (tick ? 0 : clk_div + 1);
         end
     end
 
-    // Assign outputs
-    assign data_out = shift_reg;
-    assign sclk = clk; // For simplicity, using the same clock
+    always @(posedge clk or posedge reset) begin
+        if (reset) begin
+            state     <= IDLE;
+            done      <= 0;
+            cs_n      <= 1;
+            sck       <= 0;
+            mosi      <= 0;
+            rx_index  <= 0;
+            id_out    <= 0;
+        end else if (tick) begin
+            case (state)
+                IDLE: begin
+                    done <= 0;
+                    sck <= 0;
+                    rx_index <= 0;
+                    if (start) begin
+                        tx_buffer[0] <= 8'h9F;  // comando JEDEC ID
+                        cs_n <= 0;
+                        bit_cnt <= 7;
+                        mosi <= 1'b1;  // primeiro bit do comando
+                        state <= ASSERT;
+                    end
+                end
+
+                ASSERT: begin
+                    sck <= 1;
+                    state <= SEND;
+                end
+
+                SEND: begin
+                    sck <= ~sck;
+                    if (sck == 1) begin
+                        if (bit_cnt == 0) begin
+                            state <= RECV;
+                            bit_cnt <= 7;
+                        end else begin
+                            bit_cnt <= bit_cnt - 1;
+                            mosi <= tx_buffer[0][bit_cnt - 1];
+                        end
+                    end
+                end
+
+                RECV: begin
+                    sck <= ~sck;
+                    if (sck == 1) begin
+                        rx_shift[bit_cnt] <= miso;
+                        if (bit_cnt == 0) begin
+                            rx_data[rx_index] <= rx_shift;
+                            bit_cnt <= 7;
+
+                            if (rx_index == 3) begin
+                                state <= DONE;
+                                rx_index <= 0;
+                            end
+                            else begin
+                                rx_index <= rx_index + 1;
+                            end
+                        end else begin
+                            bit_cnt <= bit_cnt - 1;
+                        end
+                    end
+                end
+
+                DONE: begin
+                    cs_n <= 1;
+                    sck  <= 0;
+                    done <= ~done;
+                    if (done == 0) begin
+                        rx_index <= rx_index + 1;
+                        id_out <= rx_data[rx_index];
+
+                        if (rx_index == 3) begin
+                            state <= IDLE;
+                        end
+                    end
+                end
+            endcase
+        end
+    end
 
 endmodule

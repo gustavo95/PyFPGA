@@ -58,7 +58,7 @@ if {$::dispatch::connected} {
 OPTRACE "synth_1" START { ROLLUP_AUTO }
 set_param chipscope.maxJobs 8
 set_param checkpoint.writeSynthRtdsInDcp 1
-set_param synth.incrementalSynthesisCache C:/Users/gusta/AppData/Roaming/Xilinx/Vivado/.Xil/Vivado-20344-Alienware_Gus/incrSyn
+set_param synth.incrementalSynthesisCache C:/Users/gusta/AppData/Roaming/Xilinx/Vivado/.Xil/Vivado-49996-Alienware_Gus/incrSyn
 set_param xicom.use_bs_reader 1
 set_msg_config -id {Synth 8-256} -limit 10000
 set_msg_config -id {Synth 8-638} -limit 10000
@@ -79,6 +79,7 @@ OPTRACE "Adding files" START { }
 read_verilog -library xil_defaultlib {
   {C:/Users/gusta/Documents/Doutorado_UFRN/Disciplinas/Projeto de pesquisa 2/PyFPGA/FPGA/USB104A7/PyFPGA.srcs/sources_1/new/baud_rate_generator.v}
   {C:/Users/gusta/Documents/Doutorado_UFRN/Disciplinas/Projeto de pesquisa 2/PyFPGA/FPGA/USB104A7/PyFPGA.srcs/sources_1/new/fifo.v}
+  {C:/Users/gusta/Documents/Doutorado_UFRN/Disciplinas/Projeto de pesquisa 2/PyFPGA/FPGA/USB104A7/PyFPGA.srcs/sources_1/new/quad_spi_master.v}
   {C:/Users/gusta/Documents/Doutorado_UFRN/Disciplinas/Projeto de pesquisa 2/PyFPGA/FPGA/USB104A7/PyFPGA.srcs/sources_1/new/uart_receiver.v}
   {C:/Users/gusta/Documents/Doutorado_UFRN/Disciplinas/Projeto de pesquisa 2/PyFPGA/FPGA/USB104A7/PyFPGA.srcs/sources_1/new/uart_transmitter.v}
   {C:/Users/gusta/Documents/Doutorado_UFRN/Disciplinas/Projeto de pesquisa 2/PyFPGA/FPGA/USB104A7/PyFPGA.srcs/sources_1/new/uart_unity.v}
