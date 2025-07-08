@@ -105,7 +105,7 @@ module quad_spi_masterinput(
                     if (sck == 1) begin
                         rx_shift[bit_cnt] <= miso;
                         if (bit_cnt == 0) begin
-                            rx_data[rx_index] <= rx_shift;
+                            rx_data[rx_index] <= {rx_shift[7:1], miso};
                             bit_cnt <= 7;
 
                             if (rx_index == 3) begin
