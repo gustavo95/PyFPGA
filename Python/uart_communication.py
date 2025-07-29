@@ -142,7 +142,7 @@ class SerialConnection:
             self.send_message(b'\x00')
             self.send_message(b'\x00')
             self.send_message(b'\x00')
-            self.send_message(b'\x02')
+            self.send_message(b'\x06')
             
             input("continue?")
             

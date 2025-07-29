@@ -1,6 +1,6 @@
 -------------------------------------
 | Tool Version : Vivado v.2024.1
-| Date         : Mon Jul  7 20:43:00 2025
+| Date         : Tue Jul  8 18:31:25 2025
 | Host         : Alienware_Gus
 | Design       : design_1
 | Device       : xc7a100t-csg324-1--

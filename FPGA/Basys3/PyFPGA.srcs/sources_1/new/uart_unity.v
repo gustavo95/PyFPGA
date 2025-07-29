@@ -40,7 +40,7 @@ module uart_unity
                     SB_TICK = 16,       // number of stop bit / oversampling ticks
                     BR_LIMIT = 651,     // baud rate generator counter limit
                     BR_BITS = 10,       // number of baud rate generator counter bits
-                    FIFO_EXP = 2        // exponent for number of FIFO addresses (2^2 = 4)
+                    FIFO_EXP = 4        // exponent for number of FIFO addresses (2^2 = 4)
     )
     (
         input clk_100MHz,               // FPGA clock

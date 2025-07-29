@@ -112,7 +112,7 @@ module communication_controller(
                 REQUEST_BYTECODE: begin
                     save_in_fifo <= 1'b0;
                     if (!print_fifo_is_empty) begin
-                        print_count <= 8'd7;
+                        print_count <= 8'd8;
                         print_pop <= 1'b1;
                         state <= READ_FIFO;
                     end
@@ -242,8 +242,8 @@ module communication_controller(
                 end
                 PRINT_ARGVAL_1: begin
                     print_pop <= 1'b0;
-                    uart_send_data <= print_value[(print_count << 3) +: 8];
-                    // uart_send_data <= print_value[7:0];
+                    uart_send_data <= print_value[((print_count-1) << 3) +: 8];
+                    // uart_send_data <= 8'haf;
                     print_count <= print_count - 1'b1;
                     uart_write_tick <= 1'b1;
                     state <= PRINT_ARGVAL_2;

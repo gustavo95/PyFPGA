@@ -1,5 +1,5 @@
 namespace eval ::optrace {
-  variable script "C:/Users/gusta/Documents/Doutorado_UFRN/Disciplinas/Projeto de pesquisa 2/PyFPGA/FPGA/PyFPGA.runs/impl_1/top.tcl"
+  variable script "C:/Users/gusta/Documents/Doutorado_UFRN/Disciplinas/Projeto de pesquisa 2/PyFPGA/FPGA/Basys3/PyFPGA.runs/impl_1/top.tcl"
   variable category "vivado_impl"
 }
 
@@ -109,11 +109,11 @@ set rc [catch {
   create_msg_db write_bitstream.pb
   set_param chipscope.maxJobs 8
   set_param checkpoint.writeSynthRtdsInDcp 1
-  set_param synth.incrementalSynthesisCache C:/Users/gusta/AppData/Roaming/Xilinx/Vivado/.Xil/Vivado-83284-Alienware_Gus/incrSyn
+  set_param synth.incrementalSynthesisCache C:/Users/gusta/AppData/Roaming/Xilinx/Vivado/.Xil/Vivado-76108-Alienware_Gus/incrSyn
   set_param xicom.use_bs_reader 1
   set_param runs.launchOptions { -jobs 16  }
   open_checkpoint top_routed.dcp
-  set_property webtalk.parent_dir {C:/Users/gusta/Documents/Doutorado_UFRN/Disciplinas/Projeto de pesquisa 2/PyFPGA/FPGA/PyFPGA.cache/wt} [current_project]
+  set_property webtalk.parent_dir {C:/Users/gusta/Documents/Doutorado_UFRN/Disciplinas/Projeto de pesquisa 2/PyFPGA/FPGA/Basys3/PyFPGA.cache/wt} [current_project]
 set_property TOP top [current_fileset]
 OPTRACE "read constraints: write_bitstream" START { }
 OPTRACE "read constraints: write_bitstream" END { }

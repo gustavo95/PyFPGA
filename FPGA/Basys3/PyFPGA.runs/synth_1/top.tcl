@@ -4,7 +4,7 @@
 
 set TIME_start [clock seconds] 
 namespace eval ::optrace {
-  variable script "C:/Users/gusta/Documents/Doutorado_UFRN/Disciplinas/Projeto de pesquisa 2/PyFPGA/FPGA/PyFPGA.runs/synth_1/top.tcl"
+  variable script "C:/Users/gusta/Documents/Doutorado_UFRN/Disciplinas/Projeto de pesquisa 2/PyFPGA/FPGA/Basys3/PyFPGA.runs/synth_1/top.tcl"
   variable category "vivado_synth"
 }
 
@@ -58,7 +58,7 @@ if {$::dispatch::connected} {
 OPTRACE "synth_1" START { ROLLUP_AUTO }
 set_param chipscope.maxJobs 8
 set_param checkpoint.writeSynthRtdsInDcp 1
-set_param synth.incrementalSynthesisCache C:/Users/gusta/AppData/Roaming/Xilinx/Vivado/.Xil/Vivado-83284-Alienware_Gus/incrSyn
+set_param synth.incrementalSynthesisCache C:/Users/gusta/AppData/Roaming/Xilinx/Vivado/.Xil/Vivado-76108-Alienware_Gus/incrSyn
 set_param xicom.use_bs_reader 1
 set_msg_config -id {Synth 8-256} -limit 10000
 set_msg_config -id {Synth 8-638} -limit 10000
@@ -68,27 +68,27 @@ create_project -in_memory -part xc7a35tcpg236-1
 set_param project.singleFileAddWarning.threshold 0
 set_param project.compositeFile.enableAutoGeneration 0
 set_param synth.vivado.isSynthRun true
-set_property webtalk.parent_dir {C:/Users/gusta/Documents/Doutorado_UFRN/Disciplinas/Projeto de pesquisa 2/PyFPGA/FPGA/PyFPGA.cache/wt} [current_project]
-set_property parent.project_path {C:/Users/gusta/Documents/Doutorado_UFRN/Disciplinas/Projeto de pesquisa 2/PyFPGA/FPGA/PyFPGA.xpr} [current_project]
+set_property webtalk.parent_dir {C:/Users/gusta/Documents/Doutorado_UFRN/Disciplinas/Projeto de pesquisa 2/PyFPGA/FPGA/Basys3/PyFPGA.cache/wt} [current_project]
+set_property parent.project_path {C:/Users/gusta/Documents/Doutorado_UFRN/Disciplinas/Projeto de pesquisa 2/PyFPGA/FPGA/Basys3/PyFPGA.xpr} [current_project]
 set_property default_lib xil_defaultlib [current_project]
 set_property target_language Verilog [current_project]
 set_property board_part digilentinc.com:basys3:part0:1.2 [current_project]
-set_property ip_output_repo {c:/Users/gusta/Documents/Doutorado_UFRN/Disciplinas/Projeto de pesquisa 2/PyFPGA/FPGA/PyFPGA.cache/ip} [current_project]
+set_property ip_output_repo {c:/Users/gusta/Documents/Doutorado_UFRN/Disciplinas/Projeto de pesquisa 2/PyFPGA/FPGA/Basys3/PyFPGA.cache/ip} [current_project]
 set_property ip_cache_permissions {read write} [current_project]
 OPTRACE "Creating in-memory project" END { }
 OPTRACE "Adding files" START { }
 read_verilog -library xil_defaultlib {
-  {C:/Users/gusta/Documents/Doutorado_UFRN/Disciplinas/Projeto de pesquisa 2/PyFPGA/FPGA/PyFPGA.srcs/sources_1/new/baud_rate_generator.v}
-  {C:/Users/gusta/Documents/Doutorado_UFRN/Disciplinas/Projeto de pesquisa 2/PyFPGA/FPGA/PyFPGA.srcs/sources_1/new/communication_controller.v}
-  {C:/Users/gusta/Documents/Doutorado_UFRN/Disciplinas/Projeto de pesquisa 2/PyFPGA/FPGA/PyFPGA.srcs/sources_1/new/display7.v}
-  {C:/Users/gusta/Documents/Doutorado_UFRN/Disciplinas/Projeto de pesquisa 2/PyFPGA/FPGA/PyFPGA.srcs/sources_1/new/fifo.v}
-  {C:/Users/gusta/Documents/Doutorado_UFRN/Disciplinas/Projeto de pesquisa 2/PyFPGA/FPGA/PyFPGA.srcs/sources_1/new/opcode_fifo.v}
-  {C:/Users/gusta/Documents/Doutorado_UFRN/Disciplinas/Projeto de pesquisa 2/PyFPGA/FPGA/PyFPGA.srcs/sources_1/new/print_fifo.v}
-  {C:/Users/gusta/Documents/Doutorado_UFRN/Disciplinas/Projeto de pesquisa 2/PyFPGA/FPGA/PyFPGA.srcs/sources_1/new/pyvm.v}
-  {C:/Users/gusta/Documents/Doutorado_UFRN/Disciplinas/Projeto de pesquisa 2/PyFPGA/FPGA/PyFPGA.srcs/sources_1/new/uart_receiver.v}
-  {C:/Users/gusta/Documents/Doutorado_UFRN/Disciplinas/Projeto de pesquisa 2/PyFPGA/FPGA/PyFPGA.srcs/sources_1/new/uart_transmitter.v}
-  {C:/Users/gusta/Documents/Doutorado_UFRN/Disciplinas/Projeto de pesquisa 2/PyFPGA/FPGA/PyFPGA.srcs/sources_1/new/uart_unity.v}
-  {C:/Users/gusta/Documents/Doutorado_UFRN/Disciplinas/Projeto de pesquisa 2/PyFPGA/FPGA/PyFPGA.srcs/sources_1/new/top.v}
+  {C:/Users/gusta/Documents/Doutorado_UFRN/Disciplinas/Projeto de pesquisa 2/PyFPGA/FPGA/Basys3/PyFPGA.srcs/sources_1/new/baud_rate_generator.v}
+  {C:/Users/gusta/Documents/Doutorado_UFRN/Disciplinas/Projeto de pesquisa 2/PyFPGA/FPGA/Basys3/PyFPGA.srcs/sources_1/new/communication_controller.v}
+  {C:/Users/gusta/Documents/Doutorado_UFRN/Disciplinas/Projeto de pesquisa 2/PyFPGA/FPGA/Basys3/PyFPGA.srcs/sources_1/new/display7.v}
+  {C:/Users/gusta/Documents/Doutorado_UFRN/Disciplinas/Projeto de pesquisa 2/PyFPGA/FPGA/Basys3/PyFPGA.srcs/sources_1/new/fifo.v}
+  {C:/Users/gusta/Documents/Doutorado_UFRN/Disciplinas/Projeto de pesquisa 2/PyFPGA/FPGA/Basys3/PyFPGA.srcs/sources_1/new/opcode_fifo.v}
+  {C:/Users/gusta/Documents/Doutorado_UFRN/Disciplinas/Projeto de pesquisa 2/PyFPGA/FPGA/Basys3/PyFPGA.srcs/sources_1/new/print_fifo.v}
+  {C:/Users/gusta/Documents/Doutorado_UFRN/Disciplinas/Projeto de pesquisa 2/PyFPGA/FPGA/Basys3/PyFPGA.srcs/sources_1/new/pyvm.v}
+  {C:/Users/gusta/Documents/Doutorado_UFRN/Disciplinas/Projeto de pesquisa 2/PyFPGA/FPGA/Basys3/PyFPGA.srcs/sources_1/new/uart_receiver.v}
+  {C:/Users/gusta/Documents/Doutorado_UFRN/Disciplinas/Projeto de pesquisa 2/PyFPGA/FPGA/Basys3/PyFPGA.srcs/sources_1/new/uart_transmitter.v}
+  {C:/Users/gusta/Documents/Doutorado_UFRN/Disciplinas/Projeto de pesquisa 2/PyFPGA/FPGA/Basys3/PyFPGA.srcs/sources_1/new/uart_unity.v}
+  {C:/Users/gusta/Documents/Doutorado_UFRN/Disciplinas/Projeto de pesquisa 2/PyFPGA/FPGA/Basys3/PyFPGA.srcs/sources_1/new/top.v}
 }
 OPTRACE "Adding files" END { }
 # Mark all dcp files as not used in implementation to prevent them from being
@@ -99,12 +99,12 @@ OPTRACE "Adding files" END { }
 foreach dcp [get_files -quiet -all -filter file_type=="Design\ Checkpoint"] {
   set_property used_in_implementation false $dcp
 }
-read_xdc {{C:/Users/gusta/Documents/Doutorado_UFRN/Disciplinas/Projeto de pesquisa 2/PyFPGA/FPGA/PyFPGA.srcs/constrs_1/new/constraints.xdc}}
-set_property used_in_implementation false [get_files {{C:/Users/gusta/Documents/Doutorado_UFRN/Disciplinas/Projeto de pesquisa 2/PyFPGA/FPGA/PyFPGA.srcs/constrs_1/new/constraints.xdc}}]
+read_xdc {{C:/Users/gusta/Documents/Doutorado_UFRN/Disciplinas/Projeto de pesquisa 2/PyFPGA/FPGA/Basys3/PyFPGA.srcs/constrs_1/new/constraints.xdc}}
+set_property used_in_implementation false [get_files {{C:/Users/gusta/Documents/Doutorado_UFRN/Disciplinas/Projeto de pesquisa 2/PyFPGA/FPGA/Basys3/PyFPGA.srcs/constrs_1/new/constraints.xdc}}]
 
 set_param ips.enableIPCacheLiteLoad 1
 
-read_checkpoint -auto_incremental -incremental {C:/Users/gusta/Documents/Doutorado_UFRN/Disciplinas/Projeto de pesquisa 2/PyFPGA/FPGA/PyFPGA.srcs/utils_1/imports/synth_1/top.dcp}
+read_checkpoint -auto_incremental -incremental {C:/Users/gusta/Documents/Doutorado_UFRN/Disciplinas/Projeto de pesquisa 2/PyFPGA/FPGA/Basys3/PyFPGA.srcs/utils_1/imports/synth_1/top.dcp}
 close [open __synthesis_is_running__ w]
 
 OPTRACE "synth_design" START { }
