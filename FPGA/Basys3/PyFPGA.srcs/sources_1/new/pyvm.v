@@ -261,26 +261,26 @@ module pyvm(
                             end
                         end
                         CALL: begin
-                            debug <= 8'hAB;
-                            error_vm <= 1'b0;
-                            vm_state <= PRINT;
+                            // debug <= 8'hAB;
+                            // error_vm <= 1'b0;
+                            // vm_state <= PRINT;
 
-                            // if (op_b_type == 8'd5) begin
-                            //     if (op_b == 64'd1) begin
-                            //         debug <= 8'hAB;
-                            //         vm_state <= PRINT;
-                            //     end
-                            //     else begin
-                            //         debug <= 8'hfc;
-                            //         error_vm <= 1'b1;
-                            //         vm_state <= WAIT_FIFO;
-                            //     end
-                            // end
-                            // else begin
-                            //     debug <= 8'hfd;
-                            //     error_vm <= 1'b1;
-                            //     vm_state <= WAIT_FIFO;
-                            // end
+                            if (op_b_type == 8'd5) begin
+                                if (op_b == 64'd1) begin
+                                    debug <= 8'hAB;
+                                    vm_state <= PRINT;
+                                end
+                                else begin
+                                    debug <= 8'hfc;
+                                    error_vm <= 1'b1;
+                                    vm_state <= WAIT_FIFO;
+                                end
+                            end
+                            else begin
+                                debug <= 8'hfd;
+                                error_vm <= 1'b1;
+                                vm_state <= WAIT_FIFO;
+                            end
                         end
                     endcase
                 end

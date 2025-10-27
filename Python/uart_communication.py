@@ -105,12 +105,18 @@ class SerialConnection:
             input("continue?")
             
             # Send resume
+            # opcode
             self.send_message(b'\x97')
+            # arg type
             self.send_message(b'\x01')
+            # arg (value)
             self.send_message(b'\x00')
             self.send_message(b'\x00')
+            # arg_val type
             self.send_message(b'\x01')
+            # arg_val size
             self.send_message(b'\x04')
+            # arg_val value
             self.send_message(b'\x00')
             self.send_message(b'\x00')
             self.send_message(b'\x00')
