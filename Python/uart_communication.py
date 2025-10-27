@@ -84,6 +84,57 @@ class SerialConnection:
         # Start both threads
         self.write_thread.start()
         self.read_thread.start()
+        
+    def send_instruction(self, opcode, arg_type, arg, argval_type, arg_val, *, byteorder="big"):
+        """
+        Envia uma instrução no formato:
+        [opcode:1][arg_type:1][arg:2][argval_type:1][argval_size:1][arg_val:argval_size]
+        - opcode, arg_type, argval_type: int(0..255) ou bytes(1)
+        - arg: int(0..65535) ou bytes(2)
+        - arg_val: int ou bytes (tamanho inferido se bytes; se int, tamanho mínimo em bytes)
+        - byteorder: 'big' (padrão) ou 'little' para converter ints
+        """
+        def _one_byte(x, name):
+            if isinstance(x, int):
+                if not (0 <= x <= 0xFF): raise ValueError(f"{name} fora de 0..255")
+                return bytes([x])
+            if isinstance(x, (bytes, bytearray)) and len(x) == 1:
+                return bytes(x)
+            raise TypeError(f"{name} deve ser int(0..255) ou bytes(1)")
+
+        def _two_bytes(x, name):
+            if isinstance(x, int):
+                if not (0 <= x <= 0xFFFF): raise ValueError(f"{name} fora de 0..65535")
+                return x.to_bytes(2, byteorder)
+            if isinstance(x, (bytes, bytearray)) and len(x) == 2:
+                return bytes(x)
+            raise TypeError(f"{name} deve ser int(0..65535) ou bytes(2)")
+
+        def _flex_bytes(x, name):
+            if isinstance(x, int):
+                if x == 0:
+                    return b"\x00"  # tamanho mínimo para zero
+                size = (x.bit_length() + 7) // 8
+                return x.to_bytes(size, byteorder)
+            if isinstance(x, (bytes, bytearray)):
+                return bytes(x)
+            raise TypeError(f"{name} deve ser int ou bytes")
+
+        payload = bytearray()
+        payload += _one_byte(opcode, "opcode")
+        payload += _one_byte(arg_type, "arg_type")
+        payload += _two_bytes(arg, "arg")
+        payload += _one_byte(argval_type, "argval_type")
+
+        arg_val_b = _flex_bytes(arg_val, "arg_val")
+        if len(arg_val_b) > 255:
+            raise ValueError("arg_val maior que 255 bytes")
+        payload += bytes([len(arg_val_b)])
+        payload += arg_val_b
+
+        # uma única chamada de envio (melhor que várias chamadas byte a byte)
+        self.send_message(bytes(payload))
+        
 
     def write_loop(self):
         """Continuously prompt for user input to send to the serial port"""
@@ -105,95 +156,32 @@ class SerialConnection:
             input("continue?")
             
             # Send resume
-            # opcode
-            self.send_message(b'\x97')
-            # arg type
-            self.send_message(b'\x01')
-            # arg (value)
-            self.send_message(b'\x00')
-            self.send_message(b'\x00')
-            # arg_val type
-            self.send_message(b'\x01')
-            # arg_val size
-            self.send_message(b'\x04')
-            # arg_val value
-            self.send_message(b'\x00')
-            self.send_message(b'\x00')
-            self.send_message(b'\x00')
-            self.send_message(b'\x00')
+            self.send_instruction(0x97, 0x01, 0x0000, 0x01, 0x00000000, byteorder="big")
             
             input("continue?")
             
-            # Send load_name
-            self.send_message(b'\x65')
-            self.send_message(b'\x01')
-            self.send_message(b'\x00')
-            self.send_message(b'\x00')
-            self.send_message(b'\x05')
-            self.send_message(b'\x04')
-            self.send_message(b'\x00')
-            self.send_message(b'\x00')
-            self.send_message(b'\x00')
-            self.send_message(b'\x01')
+            # Send load_name print
+            self.send_instruction(0x65, 0x01, 0x0000, 0x05, 0x00000001, byteorder="big")
             
             input("continue?")
             
             # Send load_const
-            self.send_message(b'\x64')
-            self.send_message(b'\x01')
-            self.send_message(b'\x00')
-            self.send_message(b'\x01')
-            self.send_message(b'\x01')
-            self.send_message(b'\x04')
-            self.send_message(b'\x00')
-            self.send_message(b'\x00')
-            self.send_message(b'\x00')
-            self.send_message(b'\x06')
+            self.send_instruction(0x64, 0x01, 0x0001, 0x01, 0x00000006, byteorder="big")
             
             input("continue?")
             
             # Send load_const
-            self.send_message(b'\x64')
-            self.send_message(b'\x01')
-            self.send_message(b'\x00')
-            self.send_message(b'\x02')
-            self.send_message(b'\x01')
-            self.send_message(b'\x04')
-            self.send_message(b'\x00')
-            self.send_message(b'\x00')
-            self.send_message(b'\x00')
-            self.send_message(b'\x03')
+            self.send_instruction(0x64, 0x01, 0x0002, 0x01, 0x00000003, byteorder="big")
             
             input("continue?")
             
             # Send binary_op
-            self.send_message(b'\x7A')
-            self.send_message(b'\x01')
-            self.send_message(b'\x00')
-            self.send_message(b'\x00')
-            self.send_message(b'\x01')
-            self.send_message(b'\x04')
-            self.send_message(b'\x00')
-            self.send_message(b'\x00')
-            self.send_message(b'\x00')
-            self.send_message(b'\x00')
+            self.send_instruction(0x7A, 0x01, 0x0000, 0x01, 0x00000000, byteorder="big")
             
             input("continue?")
             
             # Send call
-            self.send_message(b'\xAB')
-            self.send_message(b'\x01')
-            self.send_message(b'\x00')
-            self.send_message(b'\x01')
-            self.send_message(b'\x01')
-            self.send_message(b'\x04')
-            self.send_message(b'\x00')
-            self.send_message(b'\x00')
-            self.send_message(b'\x00')
-            self.send_message(b'\x01')
-            
-            
-            
+            self.send_instruction(0xAB, 0x01, 0x0001, 0x01, 0x00000001, byteorder="big")             
 
     def close_serial(self) -> None:
         """Close serial connection and stop threads"""
