@@ -25,14 +25,14 @@ module print_fifo(
     input RESET,
     input fifo_pop,
     input fifo_save,
-    input [63:0] argval_in,
+    input [31:0] argval_in,
     output fifo_full,
     output fifo_empty,
-    output reg [63:0] argval_out
+    output reg [31:0] argval_out
 );
 
     // FIFO interna para os campos do argval
-    reg [63:0] fifo_argval [3:0];     // Valores do argval (64 bits)
+    reg [31:0] fifo_argval [3:0];     // Valores do argval (64 bits)
 
     // Controle da FIFO
     reg [1:0] read_ptr, write_ptr;    // Ponteiros de leitura/escrita

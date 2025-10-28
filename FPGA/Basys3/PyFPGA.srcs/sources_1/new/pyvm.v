@@ -29,14 +29,14 @@ module pyvm(
     input [15:0] arg_value,
     input [7:0] argval_type,
     input [7:0] argval_len,
-    input [63:0] argval_value,
+    input [31:0] argval_value,
     input print_fifo_is_full,
     output reg [3:0] vm_state,
     output reg fifo_pop,
     output reg [7:0] debug,
     output reg error_vm,
     output reg print,
-    output reg [63:0] print_value
+    output reg [31:0] print_value
 );
 
     // States
@@ -61,19 +61,19 @@ module pyvm(
     localparam CALL         = 8'hAB;
 
     // Regs
-    reg [63:0] stack [7:0];
-    reg [7:0] stack_type [8:0];
+    reg [31:0] stack [7:0];
+    reg [7:0] stack_type [7:0];
     reg [7:0] stack_pointer;
 
-    reg [63:0] name_list [8:0];
-    reg [7:0] name_list_type [8:0];
+    reg [31:0] name_list [7:0];
+    reg [7:0] name_list_type [7:0];
 
     // Auxiliar registers
     reg [31:0] op_a;
     reg [7:0] op_a_type;
     reg [31:0] op_b;
     reg [7:0] op_b_type;
-    reg [63:0] op_result;
+    reg [31:0] op_result;
     reg [7:0] op_result_type;
 
 
@@ -176,7 +176,7 @@ module pyvm(
 
                 // Load argument A
                 LOAD_A: begin
-                    op_a <= stack[stack_pointer][31:0];
+                    op_a <= stack[stack_pointer];
                     op_a_type <= stack_type[stack_pointer];
                     stack_pointer <= stack_pointer - 1;
                     vm_state <= LOAD_B;
@@ -184,7 +184,7 @@ module pyvm(
 
                 // Load argument B
                 LOAD_B: begin
-                    op_b <= stack[stack_pointer][31:0];
+                    op_b <= stack[stack_pointer];
                     op_b_type <= stack_type[stack_pointer];
                     stack_pointer <= stack_pointer - 1;
                     vm_state <= EXECUTE;

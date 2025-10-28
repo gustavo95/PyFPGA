@@ -134,7 +134,6 @@ class SerialConnection:
 
         # uma única chamada de envio (melhor que várias chamadas byte a byte)
         self.send_message(bytes(payload))
-        
 
     def write_loop(self):
         """Continuously prompt for user input to send to the serial port"""
@@ -166,17 +165,17 @@ class SerialConnection:
             input("continue?")
             
             # Send load_const
-            self.send_instruction(0x64, 0x01, 0x0001, 0x01, 0x00000006, byteorder="big")
+            self.send_instruction(0x64, 0x01, 0x0001, 0x01, 0x00000003, byteorder="big")
             
             input("continue?")
             
             # Send load_const
-            self.send_instruction(0x64, 0x01, 0x0002, 0x01, 0x00000003, byteorder="big")
+            self.send_instruction(0x64, 0x01, 0x0002, 0x01, 0x00000006, byteorder="big")
             
             input("continue?")
             
             # Send binary_op
-            self.send_instruction(0x7A, 0x01, 0x0000, 0x01, 0x00000000, byteorder="big")
+            self.send_instruction(0x7A, 0x01, 0x0000, 0x01, 0x0000000A, byteorder="big")
             
             input("continue?")
             

@@ -70,10 +70,10 @@ module top(
     wire [15:0] comm_ctrl_arg_value;
     wire [7:0] comm_ctrl_argval_type;
     wire [7:0] comm_ctrl_argval_len;
-    wire [63:0] comm_ctrl_argval_value;
+    wire [31:0] comm_ctrl_argval_value;
     wire comm_ctrl_fifo_full;
     wire comm_ctrl_fifo_empty;
-    wire [63:0] comm_ctrl_print_value;
+    wire [31:0] comm_ctrl_print_value;
     wire comm_ctrl_print_empty;
     wire comm_ctrl_print_pop;
 
@@ -83,12 +83,12 @@ module top(
     wire [15:0] vm_arg_value;
     wire [7:0] vm_argval_type;
     wire [7:0] vm_argval_len;
-    wire [63:0] vm_argval_value;
+    wire [31:0] vm_argval_value;
     wire [1:0] vm_state;
     wire [7:0] vm_debug;
     wire vm_error;
     wire vm_print;
-    wire [63:0] vm_print_value;
+    wire [31:0] vm_print_value;
     wire vm_print_full;
 
     // Assignments

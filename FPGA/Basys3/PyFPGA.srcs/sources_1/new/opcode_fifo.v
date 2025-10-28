@@ -8,7 +8,7 @@ module opcode_fifo(
     input [15:0] arg_value_in,
     input [7:0] argval_type_in,
     input [7:0] argval_len_in,
-    input [63:0] argval_in,
+    input [31:0] argval_in,
     output fifo_full,
     output fifo_empty,
     output reg [7:0] opcode_out,
@@ -16,7 +16,7 @@ module opcode_fifo(
     output reg [15:0] arg_value_out,
     output reg [7:0] argval_type_out,
     output reg [7:0] argval_len_out,
-    output reg [63:0] argval_out
+    output reg [31:0] argval_out
 );
 
     // FIFO interna achatada
@@ -25,7 +25,7 @@ module opcode_fifo(
     reg [15:0] fifo_arg_value [3:0];
     reg [7:0] fifo_argval_type [3:0];
     reg [7:0] fifo_argval_len [3:0];
-    reg [63:0] fifo_argval [3:0];
+    reg [31:0] fifo_argval [3:0];
 
     // Controle
     reg [1:0] read_ptr, write_ptr;
