@@ -134,6 +134,83 @@ class SerialConnection:
 
         # uma única chamada de envio (melhor que várias chamadas byte a byte)
         self.send_message(bytes(payload))
+        
+    def test_vm(self):           
+        # Send resume
+        input("continue?")
+        self.send_instruction(0x97, 0x01, 0x0000, 0x01, 0x00000000, byteorder="big")
+        
+        # Send load_name print
+        input("continue?")
+        self.send_instruction(0x65, 0x01, 0x0000, 0x05, 0x00000001, byteorder="big")
+        
+        # Send load_const
+        input("continue?")
+        self.send_instruction(0x64, 0x01, 0x0001, 0x01, 0x00000003, byteorder="big")
+        
+        # Send load_const
+        input("continue?")
+        self.send_instruction(0x64, 0x01, 0x0002, 0x01, 0x00000006, byteorder="big")
+        
+        # Send binary_op
+        input("continue?")
+        self.send_instruction(0x7A, 0x01, 0x0000, 0x01, 0x0000000A, byteorder="big")
+        
+        # Send call
+        input("continue?")
+        self.send_instruction(0xAB, 0x01, 0x0001, 0x01, 0x00000001, byteorder="big")
+        
+    def execute_op(self, interrupt=False):
+        # Send resume
+        if interrupt:
+            input("send resume?")
+        self.send_instruction(0x97, 0x01, 0x0000, 0x01, 0x00000000, byteorder="big")
+        
+        # Send load_const
+        if interrupt:
+            input("send load const 1?")                 #B
+        self.send_instruction(0x64, 0x01, 0x0001, 0x01, 0x00000000, byteorder="big")
+        
+        # Send load_const
+        if interrupt:
+            input("send load const 2?")                 #A
+        self.send_instruction(0x64, 0x01, 0x0002, 0x01, 0x00000FFF, byteorder="big")
+        
+        # Send binary_op
+        if interrupt:
+            input("send binary op?")               # add - 0, sub - A, mul - 5, div - B
+        self.send_instruction(0x7A, 0x01, 0x0000, 0x01, 0x00000000, byteorder="big")
+        
+        # Send store_name A
+        if interrupt:
+            input("send store name?")
+        self.send_instruction(0x5A, 0x01, 0x0001, 0x01, 0x00000000, byteorder="big")
+        
+        # Send push_null
+        if interrupt:
+            input("send push null?")
+        self.send_instruction(0x02, 0x01, 0x0000, 0x01, 0x00000000, byteorder="big")
+        
+        # Send load_name print
+        if interrupt:
+            input("send laod name print?")
+        self.send_instruction(0x65, 0x01, 0x0000, 0x05, 0x00000001, byteorder="big")
+        
+        # Send load_name A
+        if interrupt:
+            input("send load name A?")
+        self.send_instruction(0x65, 0x01, 0x0001, 0x04, 0x00000001, byteorder="big")
+        
+        # Send call
+        if interrupt:
+            input("send call?")
+        self.send_instruction(0xAB, 0x01, 0x0001, 0x01, 0x00000001, byteorder="big")
+        
+        # Send pop_top
+        if interrupt:
+            input("send pop top?")
+        self.send_instruction(0x01, 0x01, 0x0000, 0x01, 0x00000000, byteorder="big")
+        
 
     def write_loop(self):
         """Continuously prompt for user input to send to the serial port"""
@@ -152,35 +229,8 @@ class SerialConnection:
                 self.send_message(b'\x30')
                 first_send = False
             
-            input("continue?")
-            
-            # Send resume
-            self.send_instruction(0x97, 0x01, 0x0000, 0x01, 0x00000000, byteorder="big")
-            
-            input("continue?")
-            
-            # Send load_name print
-            self.send_instruction(0x65, 0x01, 0x0000, 0x05, 0x00000001, byteorder="big")
-            
-            input("continue?")
-            
-            # Send load_const
-            self.send_instruction(0x64, 0x01, 0x0001, 0x01, 0x00000003, byteorder="big")
-            
-            input("continue?")
-            
-            # Send load_const
-            self.send_instruction(0x64, 0x01, 0x0002, 0x01, 0x00000006, byteorder="big")
-            
-            input("continue?")
-            
-            # Send binary_op
-            self.send_instruction(0x7A, 0x01, 0x0000, 0x01, 0x0000000A, byteorder="big")
-            
-            input("continue?")
-            
-            # Send call
-            self.send_instruction(0xAB, 0x01, 0x0001, 0x01, 0x00000001, byteorder="big")             
+            # self.test_vm()
+            self.execute_op(True)
 
     def close_serial(self) -> None:
         """Close serial connection and stop threads"""
