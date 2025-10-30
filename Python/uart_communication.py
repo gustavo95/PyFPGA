@@ -85,7 +85,7 @@ class SerialConnection:
         self.write_thread.start()
         self.read_thread.start()
         
-    def send_instruction(self, opcode, arg_type, arg, argval_type, arg_val, *, byteorder="big"):
+    def send_instruction(self, opcode, oparg_type, oparg, argval_type, argval, *, byteorder="big"):
         """
         Envia uma instrução no formato:
         [opcode:1][arg_type:1][arg:2][argval_type:1][argval_size:1][arg_val:argval_size]
@@ -122,11 +122,11 @@ class SerialConnection:
 
         payload = bytearray()
         payload += _one_byte(opcode, "opcode")
-        payload += _one_byte(arg_type, "arg_type")
-        payload += _two_bytes(arg, "arg")
+        payload += _one_byte(oparg_type, "arg_type")
+        payload += _two_bytes(oparg, "arg")
         payload += _one_byte(argval_type, "argval_type")
 
-        arg_val_b = _flex_bytes(arg_val, "arg_val")
+        arg_val_b = _flex_bytes(argval, "arg_val")
         if len(arg_val_b) > 255:
             raise ValueError("arg_val maior que 255 bytes")
         payload += bytes([len(arg_val_b)])
@@ -161,6 +161,9 @@ class SerialConnection:
         self.send_instruction(0xAB, 0x01, 0x0001, 0x01, 0x00000001, byteorder="big")
         
     def execute_op(self, interrupt=False):
+
+        #opcode, oparg_type, oparg, argval_type, argval
+
         # Send resume
         if interrupt:
             input("send resume?")

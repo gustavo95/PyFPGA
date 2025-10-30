@@ -66,11 +66,11 @@ module top(
     wire comm_ctrl_fifo_pop;
     wire comm_ctrl_fifo_save;
     wire [7:0] comm_ctrl_opcode;
-    wire [7:0] comm_ctrl_arg_type;
-    wire [15:0] comm_ctrl_arg_value;
+    wire [7:0] comm_ctrl_oparg_type;
+    wire [15:0] comm_ctrl_oparg;
     wire [7:0] comm_ctrl_argval_type;
     wire [7:0] comm_ctrl_argval_len;
-    wire [31:0] comm_ctrl_argval_value;
+    wire [31:0] comm_ctrl_argval;
     wire comm_ctrl_fifo_full;
     wire comm_ctrl_fifo_empty;
     wire [31:0] comm_ctrl_print_value;
@@ -79,11 +79,11 @@ module top(
 
     // Python VM wires and regs
     wire [7:0] vm_opcode;
-    wire [7:0] vm_arg_type;
-    wire [15:0] vm_arg_value;
+    wire [7:0] vm_oparg_type;
+    wire [15:0] vm_oparg;
     wire [7:0] vm_argval_type;
     wire [7:0] vm_argval_len;
-    wire [31:0] vm_argval_value;
+    wire [31:0] vm_argval;
     wire [1:0] vm_state;
     wire [7:0] vm_debug;
     wire vm_error;
@@ -176,11 +176,11 @@ module top(
         .state(comm_ctrl_state),
         .debug(hex_byte1),
         .opcode(comm_ctrl_opcode),
-        .arg_type(comm_ctrl_arg_type),
-        .arg_value(comm_ctrl_arg_value),
+        .oparg_type(comm_ctrl_oparg_type),
+        .oparg(comm_ctrl_oparg),
         .argval_type(comm_ctrl_argval_type),
         .argval_len(comm_ctrl_argval_len),
-        .argval_value(comm_ctrl_argval_value),
+        .argval(comm_ctrl_argval),
         .save_in_fifo(comm_ctrl_fifo_save),
         .print_pop(comm_ctrl_print_pop)
     );
@@ -192,19 +192,19 @@ module top(
         .fifo_pop(comm_ctrl_fifo_pop),
         .fifo_save(comm_ctrl_fifo_save),
         .opcode_in(comm_ctrl_opcode),
-        .arg_type_in(comm_ctrl_arg_type),
-        .arg_value_in(comm_ctrl_arg_value),
+        .oparg_type_in(comm_ctrl_oparg_type),
+        .oparg_in(comm_ctrl_oparg),
         .argval_type_in(comm_ctrl_argval_type),
         .argval_len_in(comm_ctrl_argval_len),
-        .argval_in(comm_ctrl_argval_value),
+        .argval_in(comm_ctrl_argval),
         .fifo_full(comm_ctrl_fifo_full),
         .fifo_empty(comm_ctrl_fifo_empty),
         .opcode_out(vm_opcode),
-        .arg_type_out(vm_arg_type),
-        .arg_value_out(vm_arg_value),
+        .oparg_type_out(vm_oparg_type),
+        .oparg_out(vm_oparg),
         .argval_type_out(vm_argval_type),
         .argval_len_out(vm_argval_len),
-        .argval_out(vm_argval_value)
+        .argval_out(vm_argval)
     );
 
     // Python VM
@@ -213,11 +213,11 @@ module top(
         .RESET(RESET),
         .fifo_is_empty(comm_ctrl_fifo_empty),
         .opcode(vm_opcode),
-        .arg_type(vm_arg_type),
-        .arg_value(vm_arg_value),
+        .oparg_type(vm_oparg_type),
+        .oparg(vm_oparg),
         .argval_type(vm_argval_type),
         .argval_len(vm_argval_len),
-        .argval_value(vm_argval_value),
+        .argval(vm_argval),
         .print_fifo_is_full(vm_print_full),
         .vm_state(vm_state),
         .fifo_pop(comm_ctrl_fifo_pop),

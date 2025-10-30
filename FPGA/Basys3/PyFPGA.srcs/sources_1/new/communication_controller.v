@@ -35,11 +35,11 @@ module communication_controller(
     output reg [4:0] state,
     output reg [7:0] debug,
     output reg [7:0] opcode,
-    output reg [7:0] arg_type,
-    output reg [15:0] arg_value,
+    output reg [7:0] oparg_type,
+    output reg [15:0] oparg,
     output reg [7:0] argval_type,
     output reg [7:0] argval_len,
-    output reg [31:0] argval_value,
+    output reg [31:0] argval,
     output reg save_in_fifo,
     output reg print_pop
 );
@@ -50,12 +50,12 @@ module communication_controller(
     localparam REQUEST_BYTECODE = 5'd2;
     localparam READ_OPCODE_1 = 5'd3;
     localparam READ_OPCODE_2 = 5'd4;
-    localparam READ_ARG_TYPE_1 = 5'd5;
-    localparam READ_ARG_TYPE_2 = 5'd6;
-    localparam READ_ARG_B0_1 = 5'd7;
-    localparam READ_ARG_B0_2 = 5'd8;
-    localparam READ_ARG_B2_1 = 5'd9;
-    localparam READ_ARG_B2_2 = 5'd10;
+    localparam READ_OPARG_TYPE_1 = 5'd5;
+    localparam READ_OPARG_TYPE_2 = 5'd6;
+    localparam READ_OPARG_B1_1 = 5'd7;
+    localparam READ_OPARG_B1_2 = 5'd8;
+    localparam READ_OPARG_B2_1 = 5'd9;
+    localparam READ_OPARG_B2_2 = 5'd10;
     localparam READ_ARGVAL_TYPE_1 = 5'd11;
     localparam READ_ARGVAL_TYPE_2 = 5'd12;
     localparam READ_ARGVAL_LEN_1 = 5'd13;
@@ -81,11 +81,11 @@ module communication_controller(
             argval_len_aux <= 8'b0;
             save_in_fifo <= 1'b0;
             opcode <= 8'b0;
-            arg_type <= 8'b0;
-            arg_value <= 16'b0;
+            oparg_type <= 8'b0;
+            oparg <= 16'b0;
             argval_type <= 8'b0;
             argval_len <= 8'b0;
-            argval_value <= 64'b0;
+            argval <= 32'b0;
             print_count <= 8'd3;
             print_pop <= 1'b0;
         end else begin
@@ -136,51 +136,51 @@ module communication_controller(
                     uart_read_tick <= 0;
                     debug <= read_data;
                     opcode <= read_data;
-                    state <= READ_ARG_TYPE_1;
+                    state <= READ_OPARG_TYPE_1;
                 end
-                READ_ARG_TYPE_1: begin
+                READ_OPARG_TYPE_1: begin
                     if (!rx_empty) begin
                         read_data <= uart_rec_data;
                         uart_read_tick <= 1;
-                        state <= READ_ARG_TYPE_2;
+                        state <= READ_OPARG_TYPE_2;
                     end else begin
                         uart_read_tick <= 0;
                     end
                 end
-                READ_ARG_TYPE_2: begin
+                READ_OPARG_TYPE_2: begin
                     uart_read_tick <= 0;
                     debug <= read_data;
-                    arg_type <= read_data;
-                    state <= READ_ARG_B0_1;
+                    oparg_type <= read_data;
+                    state <= READ_OPARG_B1_1;
                 end
-                READ_ARG_B0_1: begin
+                READ_OPARG_B1_1: begin
                     if (!rx_empty) begin
                         read_data <= uart_rec_data;
                         uart_read_tick <= 1;
-                        state <= READ_ARG_B0_2;
+                        state <= READ_OPARG_B1_2;
                     end else begin
                         uart_read_tick <= 0;
                     end
                 end
-                READ_ARG_B0_2: begin
+                READ_OPARG_B1_2: begin
                     uart_read_tick <= 0;
                     debug <= read_data;
-                    arg_value[15:8] <= read_data;
-                    state <= READ_ARG_B2_1;
+                    oparg[15:8] <= read_data;
+                    state <= READ_OPARG_B2_1;
                 end
-                READ_ARG_B2_1: begin
+                READ_OPARG_B2_1: begin
                     if (!rx_empty) begin
                         read_data <= uart_rec_data;
                         uart_read_tick <= 1;
-                        state <= READ_ARG_B2_2;
+                        state <= READ_OPARG_B2_2;
                     end else begin
                         uart_read_tick <= 0;
                     end
                 end
-                READ_ARG_B2_2: begin
+                READ_OPARG_B2_2: begin
                     uart_read_tick <= 0;
                     debug <= read_data;
-                    arg_value[7:0] <= read_data;
+                    oparg[7:0] <= read_data;
                     state <= READ_ARGVAL_TYPE_1;
                 end
                 READ_ARGVAL_TYPE_1: begin
@@ -227,7 +227,7 @@ module communication_controller(
                 READ_ARGVAL_2: begin
                     uart_read_tick <= 1'b0;
                     debug <= read_data;
-                    argval_value[(argval_len_aux << 3) +: 8] <= read_data;
+                    argval[(argval_len_aux << 3) +: 8] <= read_data;
                     if (argval_len_aux <= 8'b0) begin
                         save_in_fifo <= 1'b1;
                         state <= REQUEST_BYTECODE;

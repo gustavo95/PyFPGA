@@ -25,11 +25,11 @@ module pyvm(
     input RESET,
     input fifo_is_empty,
     input [7:0] opcode,
-    input [7:0] arg_type,
-    input [15:0] arg_value,
+    input [7:0] oparg_type,
+    input [15:0] oparg,
     input [7:0] argval_type,
     input [7:0] argval_len,
-    input [31:0] argval_value,
+    input [31:0] argval,
     input print_fifo_is_full,
     output reg [3:0] vm_state,
     output reg fifo_pop,
@@ -85,7 +85,7 @@ module pyvm(
             error_vm <= 1'b0;
             stack_pointer <= 8'b0;
             print <= 1'b0;
-            print_value <= 64'b0;
+            print_value <= 32'b0;
         end else begin
             case (vm_state)
 
@@ -125,8 +125,8 @@ module pyvm(
                         STORE_NAME: begin
                             debug <= 8'h5A;
                             error_vm <= 1'b0;
-                            name_list[arg_value] <= stack[stack_pointer];
-                            name_list_type[arg_value] <= stack_type[stack_pointer];
+                            name_list[oparg] <= stack[stack_pointer];
+                            name_list_type[oparg] <= stack_type[stack_pointer];
                             stack_pointer <= stack_pointer - 1;
                             vm_state <= WAIT_FIFO;
                         end
@@ -196,16 +196,16 @@ module pyvm(
                         PUSH_NULL: begin
                             debug <= 8'h02;
                             error_vm <= 1'b0;
-                            stack[stack_pointer] <= 64'b0;
+                            stack[stack_pointer] <= 32'b0;
                             stack_type[stack_pointer] <= 8'h00;
                             vm_state <= WAIT_FIFO;
                         end
                         LOAD_CONST: begin
                             // debug <= 8'h64;
                             error_vm <= 1'b0;
-                            stack[stack_pointer] <= argval_value;
+                            stack[stack_pointer] <= argval;
                             stack_type[stack_pointer] <= argval_type;
-                            debug <= argval_value[7:0];
+                            debug <= argval[7:0];
                             vm_state <= WAIT_FIFO;
                         end
                         LOAD_NAME: begin
@@ -213,17 +213,17 @@ module pyvm(
                             error_vm <= 1'b0;
 
                             if (argval_type == 8'h05) begin
-                                stack[stack_pointer] <= argval_value;
+                                stack[stack_pointer] <= argval;
                                 stack_type[stack_pointer] <= argval_type;
-                                debug <= argval_value[7:0];
+                                debug <= argval[7:0];
                             end
                             else if (argval_type == 8'h04) begin
-                                stack[stack_pointer] <= name_list[argval_value];
-                                stack_type[stack_pointer] <= name_list_type[argval_value];
-                                debug <= name_list[argval_value][7:0];
+                                stack[stack_pointer] <= name_list[argval];
+                                stack_type[stack_pointer] <= name_list_type[argval];
+                                debug <= name_list[argval][7:0];
                             end
                             else begin
-                                stack[stack_pointer] <= 64'b0;
+                                stack[stack_pointer] <= 32'b0;
                                 stack_type[stack_pointer] <= 8'h00;
                                 debug <= 8'h00;
                                 error_vm <= 1'b1;
@@ -236,20 +236,20 @@ module pyvm(
                                 op_result_type <= op_a_type;
                                 error_vm <= 1'b0;
                                 debug <= 8'h7A;
-                                case (argval_value)
-                                    64'd0: begin
+                                case (argval)
+                                    32'd0: begin
                                         op_result <= op_a + op_b;
                                     end
-                                    64'd10: begin
+                                    32'd10: begin
                                         op_result <= op_a - op_b;
                                     end
-                                    64'd5: begin
+                                    32'd5: begin
                                         op_result <= op_a * op_b;
                                     end
-                                    64'd11: begin
+                                    32'd11: begin
                                         op_result <= op_a / op_b;
                                     end
-                                    64'd6: begin
+                                    32'd6: begin
                                         op_result <= op_a % op_b;
                                     end
                                 endcase
@@ -266,7 +266,7 @@ module pyvm(
                             // vm_state <= PRINT;
 
                             if (op_b_type == 8'd5) begin
-                                if (op_b == 64'd1) begin
+                                if (op_b == 32'd1) begin
                                     debug <= 8'hAB;
                                     vm_state <= PRINT;
                                 end
