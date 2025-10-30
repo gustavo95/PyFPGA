@@ -85,15 +85,15 @@ class SerialConnection:
         self.write_thread.start()
         self.read_thread.start()
         
-    def send_instruction(self, opcode, oparg_type, oparg, argval_type, argval, *, byteorder="big"):
-        """
-        Envia uma instrução no formato:
-        [opcode:1][arg_type:1][arg:2][argval_type:1][argval_size:1][arg_val:argval_size]
-        - opcode, arg_type, argval_type: int(0..255) ou bytes(1)
-        - arg: int(0..65535) ou bytes(2)
-        - arg_val: int ou bytes (tamanho inferido se bytes; se int, tamanho mínimo em bytes)
-        - byteorder: 'big' (padrão) ou 'little' para converter ints
-        """
+    def send_instruction(
+        self,
+        opcode, oparg_type, oparg,
+        argval_type, argval,
+        *,
+        byteorder="big",
+        argval_size=4,     # <— força 4 bytes por padrão
+        signed=False       # se um dia precisar de negativos
+    ):
         def _one_byte(x, name):
             if isinstance(x, int):
                 if not (0 <= x <= 0xFF): raise ValueError(f"{name} fora de 0..255")
@@ -105,35 +105,48 @@ class SerialConnection:
         def _two_bytes(x, name):
             if isinstance(x, int):
                 if not (0 <= x <= 0xFFFF): raise ValueError(f"{name} fora de 0..65535")
-                return x.to_bytes(2, byteorder)
+                return x.to_bytes(2, byteorder, signed=False)
             if isinstance(x, (bytes, bytearray)) and len(x) == 2:
                 return bytes(x)
             raise TypeError(f"{name} deve ser int(0..65535) ou bytes(2)")
 
-        def _flex_bytes(x, name):
+        def _argval_bytes(x, size, name):
             if isinstance(x, int):
-                if x == 0:
-                    return b"\x00"  # tamanho mínimo para zero
-                size = (x.bit_length() + 7) // 8
-                return x.to_bytes(size, byteorder)
+                # valida se cabe no tamanho solicitado
+                minv = -(1 << (8*size - 1)) if signed else 0
+                maxv =  (1 << (8*size - 1)) - 1 if signed else (1 << (8*size)) - 1
+                if not (minv <= x <= maxv):
+                    raise ValueError(f"{name} não cabe em {size} bytes (signed={signed})")
+                return x.to_bytes(size, byteorder, signed=signed)
             if isinstance(x, (bytes, bytearray)):
-                return bytes(x)
+                b = bytes(x)
+                if size is None:
+                    return b
+                if len(b) > size:
+                    raise ValueError(f"{name} tem {len(b)} bytes, maior que {size}")
+                # pad à esquerda para big-endian, à direita para little-endian
+                pad = bytes(size - len(b))
+                return (pad + b) if byteorder == "big" else (b + pad)
             raise TypeError(f"{name} deve ser int ou bytes")
 
         payload = bytearray()
         payload += _one_byte(opcode, "opcode")
         payload += _one_byte(oparg_type, "arg_type")
         payload += _two_bytes(oparg, "arg")
+
         payload += _one_byte(argval_type, "argval_type")
 
-        arg_val_b = _flex_bytes(argval, "arg_val")
+        # se quiser “tamanho automático”, passe argval_size=None
+        size = len(argval) if (isinstance(argval, (bytes, bytearray)) and argval_size is None) else (argval_size or 1)
+        arg_val_b = _argval_bytes(argval, size, "arg_val")
+
         if len(arg_val_b) > 255:
             raise ValueError("arg_val maior que 255 bytes")
         payload += bytes([len(arg_val_b)])
         payload += arg_val_b
 
-        # uma única chamada de envio (melhor que várias chamadas byte a byte)
         self.send_message(bytes(payload))
+
         
     def test_vm(self):           
         # Send resume
@@ -177,7 +190,7 @@ class SerialConnection:
         # Send load_const
         if interrupt:
             input("send load const 2?")                 #A
-        self.send_instruction(0x64, 0x01, 0x0002, 0x01, 0x00000FFF, byteorder="big")
+        self.send_instruction(0x64, 0x01, 0x0002, 0x01, 0xFFFFFFFF, byteorder="big")
         
         # Send binary_op
         if interrupt:

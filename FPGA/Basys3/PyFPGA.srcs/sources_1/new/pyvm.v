@@ -252,6 +252,9 @@ module pyvm(
                                     32'd6: begin
                                         op_result <= op_a % op_b;
                                     end
+                                    default: begin
+                                        op_result <= 8'h06;
+                                    end
                                 endcase
                                 stack_pointer <= stack_pointer + 1;
                                 vm_state <= STORE;
@@ -272,6 +275,7 @@ module pyvm(
                                 end
                                 else begin
                                     debug <= 8'hfc;
+                                    // debug <= op_b[7:0];
                                     error_vm <= 1'b1;
                                     vm_state <= WAIT_FIFO;
                                 end

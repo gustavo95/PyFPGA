@@ -55,7 +55,7 @@ module opcode_fifo(
             else if (fifo_pop && !fifo_empty) begin
                 // Ler da FIFO
                 opcode_out <= fifo_opcode[read_ptr];
-                oparg_type_out <= fifo_arg_type[read_ptr];
+                oparg_type_out <= fifo_oparg_type[read_ptr];
                 oparg_out <= fifo_oparg[read_ptr];
                 argval_type_out <= fifo_argval_type[read_ptr];
                 argval_len_out <= fifo_argval_len[read_ptr];
