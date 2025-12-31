@@ -84,7 +84,7 @@ module top(
     wire [7:0] vm_argval_type;
     wire [7:0] vm_argval_len;
     wire [31:0] vm_argval;
-    wire [1:0] vm_state;
+    wire [3:0] vm_state;
     wire [7:0] vm_debug;
     wire vm_error;
     wire vm_print;
@@ -100,6 +100,8 @@ module top(
     assign LD5 = comm_ctrl_fifo_save;
     assign LD6 = comm_ctrl_fifo_pop;
     assign LD15 = vm_error;
+
+    reg [15:0] vm_execution_counter;
     
     // Clock divider
         // clk_div[0]  - Frequency = 50 MHz        | Period = 20 ns
@@ -135,13 +137,26 @@ module top(
             end
         end
     end
-    
+
+    always @(posedge CLK or posedge RESET) begin
+        if (RESET) begin
+            vm_execution_counter <= 0;
+        end
+        else begin
+            if (vm_state != 4'b0000) begin
+                vm_execution_counter <= vm_execution_counter + 1;
+            end
+        end
+    end
+
     // Seven segmente controller
     display7 d7(
         .clk_1KHz(clk_div[15]),
         .reset(RESET),
         .byte1(hex_byte1),
         .byte2(vm_debug),
+        // .byte1(vm_execution_counter[7:0]),
+        // .byte2(vm_execution_counter[15:8]),
         .Hex(Hex),
         .Hex_select(Hex_select)
     );

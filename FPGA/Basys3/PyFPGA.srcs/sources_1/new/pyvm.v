@@ -77,6 +77,14 @@ module pyvm(
     reg [7:0] op_result_type;
 
 
+    // Binary division operation
+    reg div_start;
+    wire div_busy;
+    wire div_done;
+    wire [31:0] div_quotient;
+    wire [31:0] div_remainder;
+    wire div_div0;
+
     always @(posedge CLK or posedge RESET) begin
         if (RESET) begin
             vm_state <= WAIT_FIFO;
@@ -86,6 +94,7 @@ module pyvm(
             stack_pointer <= 8'b0;
             print <= 1'b0;
             print_value <= 32'b0;
+            div_start <= 1'b0;
         end else begin
             case (vm_state)
 
@@ -247,10 +256,10 @@ module pyvm(
                                         op_result <= op_a * op_b;
                                     end
                                     32'd11: begin
-                                        op_result <= op_a / op_b;
+                                        div_start <= 1'b1;
                                     end
                                     32'd6: begin
-                                        op_result <= op_a % op_b;
+                                        div_start <= 1'b1;
                                     end
                                     default: begin
                                         op_result <= 8'h06;
@@ -291,10 +300,25 @@ module pyvm(
 
                 // Store result
                 STORE: begin
-                    stack[stack_pointer] <= op_result;
-                    stack_type[stack_pointer] <= op_result_type;
-                    debug <= op_result[7:0];
-                    vm_state <= WAIT_FIFO;
+                    if (opcode == BINARY_OP && (argval == 32'd11 || argval == 32'd6)) begin
+                        // Wait for division to complete
+                        div_start <= 1'b0;
+                        if (div_done) begin
+                            if (argval == 32'd11) begin
+                                stack[stack_pointer] <= div_quotient;
+                            end else begin
+                                stack[stack_pointer] <= div_remainder;
+                            end
+                            stack_type[stack_pointer] <= op_result_type;
+                            debug <= div_quotient[7:0];
+                            vm_state <= WAIT_FIFO;
+                        end
+                    end else begin
+                        stack[stack_pointer] <= op_result;
+                        stack_type[stack_pointer] <= op_result_type;
+                        debug <= op_result[7:0];
+                        vm_state <= WAIT_FIFO;
+                    end
                 end
 
                 // Print instruction
@@ -309,5 +333,20 @@ module pyvm(
             endcase
         end
     end
+
+udiv32_iter div(
+    .CLK(CLK),
+    .RESET(RESET),
+
+    .start(div_start),
+    .dividend(op_a),
+    .divisor(op_b),
+
+    .busy(div_busy),
+    .done(div_done),
+    .quotient(div_quotient),
+    .remainder(div_remainder),
+    .div0(div_div0)
+);
 
 endmodule

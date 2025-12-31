@@ -1,6 +1,7 @@
 import re
 import sys
 import time
+from time import perf_counter_ns
 import threading
 import serial
 import serial.tools.list_ports
@@ -9,6 +10,8 @@ class SerialConnection:
     """Responsible for communication via serial"""
     __serial = None
     __stop_threads = False  # flag to control the threads
+    response_count = 0
+    t0 = 0
 
     def __init__(self) -> None:
         """Initialize the serial connection to the microcontroller"""
@@ -70,6 +73,15 @@ class SerialConnection:
                     char = self.__serial.read(1)  # read one byte at a time
                     if char:
                         print("Received:", char.decode(errors='ignore'), hex(char[0]), flush=True)
+                        
+                        if (char[0] == 0x05):
+                            self.response_count = self.response_count + 1
+                            print(f"Response count: {self.response_count}")
+                            if self.response_count == 10:
+                                t1 = perf_counter_ns()
+                                elapsed_time = t1 - self.t0
+                                print(f"Executed 10 instructions in {elapsed_time} ns ({elapsed_time/1_000_000} ms)")
+                        
                         # time.sleep(self.send_delay/2)
                         # self.__serial.flushInput()
             except serial.SerialException as e:
@@ -174,55 +186,57 @@ class SerialConnection:
         self.send_instruction(0xAB, 0x01, 0x0001, 0x01, 0x00000001, byteorder="big")
         
     def execute_op(self, interrupt=False):
+        self.response_count = 0
+        self.t0 = perf_counter_ns()
 
         #opcode, oparg_type, oparg, argval_type, argval
 
-        # Send resume
+        # 1 Send resume
         if interrupt:
             input("send resume?")
         self.send_instruction(0x97, 0x01, 0x0000, 0x01, 0x00000000, byteorder="big")
         
-        # Send load_const
+        # 2 Send load_const
         if interrupt:
             input("send load const 1?")                 #B
-        self.send_instruction(0x64, 0x01, 0x0001, 0x01, 0x00000000, byteorder="big")
+        self.send_instruction(0x64, 0x01, 0x0001, 0x01, 0x55555555, byteorder="big")
         
-        # Send load_const
+        # 3 Send load_const
         if interrupt:
             input("send load const 2?")                 #A
-        self.send_instruction(0x64, 0x01, 0x0002, 0x01, 0xFFFFFFFF, byteorder="big")
+        self.send_instruction(0x64, 0x01, 0x0002, 0x01, 0xAAAAAAAA, byteorder="big")
         
-        # Send binary_op
+        # 4 Send binary_op
         if interrupt:
             input("send binary op?")               # add - 0, sub - A, mul - 5, div - B
-        self.send_instruction(0x7A, 0x01, 0x0000, 0x01, 0x00000000, byteorder="big")
+        self.send_instruction(0x7A, 0x01, 0x0000, 0x01, 0x0000000B, byteorder="big")
         
-        # Send store_name A
+        # 5 Send store_name A
         if interrupt:
             input("send store name?")
         self.send_instruction(0x5A, 0x01, 0x0001, 0x01, 0x00000000, byteorder="big")
         
-        # Send push_null
+        # 6 Send push_null
         if interrupt:
             input("send push null?")
         self.send_instruction(0x02, 0x01, 0x0000, 0x01, 0x00000000, byteorder="big")
         
-        # Send load_name print
+        # 7 Send load_name print
         if interrupt:
-            input("send laod name print?")
+            input("send load name print?")
         self.send_instruction(0x65, 0x01, 0x0000, 0x05, 0x00000001, byteorder="big")
         
-        # Send load_name A
+        # 8 Send load_name A
         if interrupt:
             input("send load name A?")
         self.send_instruction(0x65, 0x01, 0x0001, 0x04, 0x00000001, byteorder="big")
         
-        # Send call
+        # 9 Send call
         if interrupt:
             input("send call?")
         self.send_instruction(0xAB, 0x01, 0x0001, 0x01, 0x00000001, byteorder="big")
         
-        # Send pop_top
+        # 10 Send pop_top
         if interrupt:
             input("send pop top?")
         self.send_instruction(0x01, 0x01, 0x0000, 0x01, 0x00000000, byteorder="big")

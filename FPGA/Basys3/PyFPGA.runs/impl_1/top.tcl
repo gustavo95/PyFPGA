@@ -109,7 +109,8 @@ set rc [catch {
   create_msg_db write_bitstream.pb
   set_param chipscope.maxJobs 8
   set_param checkpoint.writeSynthRtdsInDcp 1
-  set_param synth.incrementalSynthesisCache C:/Users/gusta/AppData/Roaming/Xilinx/Vivado/.Xil/Vivado-13420-Alienware_Gus/incrSyn
+  set_param synth.incrementalSynthesisCache C:/Users/gusta/AppData/Roaming/Xilinx/Vivado/.Xil/Vivado-40276-Alienware_Gus/incrSyn
+  set_param xicom.use_bs_reader 1
   set_param runs.launchOptions { -jobs 16  }
   open_checkpoint top_routed.dcp
   set_property webtalk.parent_dir {C:/Users/gusta/Documents/Doutorado_UFRN/Disciplinas/Projeto de pesquisa 2/PyFPGA/FPGA/Basys3/PyFPGA.cache/wt} [current_project]
