@@ -1,0 +1,11 @@
+0.7
+2020.2
+May 22 2024
+19:03:11
+C:/Users/gusta/Documents/Doutorado_UFRN/Desenvolvimento/teste_AXI/test_AXI.sim/sim_1/behav/xsim/glbl.v,1708598507,verilog,,,,glbl,,,,,,,,
+C:/Users/gusta/Documents/Doutorado_UFRN/Desenvolvimento/teste_AXI/test_AXI.srcs/sim_1/new/testbench.v,1772990090,verilog,,,,testbench,,,,,,,,
+C:/Users/gusta/Documents/Doutorado_UFRN/Desenvolvimento/teste_AXI/test_AXI.srcs/sources_1/new/clk_div.v,1771698746,verilog,,C:/Users/gusta/Documents/Doutorado_UFRN/Desenvolvimento/teste_AXI/test_AXI.srcs/sources_1/new/display7.v,,clk_div,,,,,,,,
+C:/Users/gusta/Documents/Doutorado_UFRN/Desenvolvimento/teste_AXI/test_AXI.srcs/sources_1/new/display7.v,1771701122,verilog,,C:/Users/gusta/Documents/Doutorado_UFRN/Desenvolvimento/teste_AXI/test_AXI.srcs/sources_1/new/mem_object.v,,display7,,,,,,,,
+C:/Users/gusta/Documents/Doutorado_UFRN/Desenvolvimento/teste_AXI/test_AXI.srcs/sources_1/new/mem_data.v,1772991118,verilog,,C:/Users/gusta/Documents/Doutorado_UFRN/Desenvolvimento/teste_AXI/test_AXI.srcs/sim_1/new/testbench.v,,mem_data,,,,,,,,
+C:/Users/gusta/Documents/Doutorado_UFRN/Desenvolvimento/teste_AXI/test_AXI.srcs/sources_1/new/mem_object.v,1772492124,verilog,,C:/Users/gusta/Documents/Doutorado_UFRN/Desenvolvimento/teste_AXI/test_AXI.srcs/sources_1/new/top.v,,mem_object,,,,,,,,
+C:/Users/gusta/Documents/Doutorado_UFRN/Desenvolvimento/teste_AXI/test_AXI.srcs/sources_1/new/top.v,1772492226,verilog,,,,top,,,,,,,,

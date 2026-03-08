@@ -199,12 +199,12 @@ class SerialConnection:
         # 2 Send load_const
         if interrupt:
             input("send load const 1?")                 #B
-        self.send_instruction(0x64, 0x01, 0x0001, 0x01, 0x55555555, byteorder="big")
+        self.send_instruction(0x64, 0x01, 0x0001, 0x01, 0x00001A85, byteorder="big")
         
         # 3 Send load_const
         if interrupt:
             input("send load const 2?")                 #A
-        self.send_instruction(0x64, 0x01, 0x0002, 0x01, 0xAAAAAAAA, byteorder="big")
+        self.send_instruction(0x64, 0x01, 0x0002, 0x01, 0x00003039, byteorder="big")
         
         # 4 Send binary_op
         if interrupt:
@@ -260,7 +260,7 @@ class SerialConnection:
                 first_send = False
             
             # self.test_vm()
-            self.execute_op(True)
+            self.execute_op(False)
 
     def close_serial(self) -> None:
         """Close serial connection and stop threads"""

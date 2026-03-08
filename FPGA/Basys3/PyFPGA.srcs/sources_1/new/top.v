@@ -153,10 +153,10 @@ module top(
     display7 d7(
         .clk_1KHz(clk_div[15]),
         .reset(RESET),
-        .byte1(hex_byte1),
-        .byte2(vm_debug),
-        // .byte1(vm_execution_counter[7:0]),
-        // .byte2(vm_execution_counter[15:8]),
+        // .byte1(hex_byte1),
+        // .byte2(vm_debug),
+        .byte1(vm_execution_counter[7:0]),
+        .byte2(vm_execution_counter[15:8]),
         .Hex(Hex),
         .Hex_select(Hex_select)
     );
