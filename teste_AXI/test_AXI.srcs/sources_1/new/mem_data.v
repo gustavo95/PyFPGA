@@ -53,6 +53,8 @@ module mem_data #(
     output reg        o_rd_ready,       // ready to receive data
     output reg  [4:0] o_rd_idx,         // read index (0 to PAGE_WORDS-1)
     output reg        o_rd_done         // read done
+    output reg        o_rd_ok           // read successful (pointer valid)
+    output reg        o_rd_tick         // read tick (data valid)
 );
 
    // ---------------- Page bitmap ----------------
@@ -151,7 +153,7 @@ module mem_data #(
                         page_epoch[a_scan] <= a_epoch;
                         page_free[a_scan]  <= PAGE_WORDS - a_len;
 
-                        o_alloc_ptr        <= mk_addr(a_scan, PAGE_WORDS - page_free[a_scan]);
+                        o_alloc_ptr        <= mk_addr(a_scan, 5'b0);
                         o_alloc_ok         <= 1'b1;
                         o_alloc_done       <= 1'b1;
                         a_state            <= A_IDLE;
@@ -164,6 +166,73 @@ module mem_data #(
                         end else begin
                             a_scan <= a_scan + 1;
                         end
+                    end
+                end
+            endcase
+        end
+    end
+
+    // ---------------- WRITE implementation ----------------
+
+    // ---------------- READ implementation ----------------
+    always @(posedge clk or posedge rst) begin
+        if (rst) begin
+            o_rd_data   <= 32'b0;
+            o_rd_ready  <= 1'b0;
+            o_rd_idx    <= 4'b0;
+            o_rd_done   <= 1'b0;
+            o_rd_ok     <= 1'b0;
+            o_rd_tick   <= 1'b0;
+            r_bram_rd_en <= 1'b0;
+            r_bram_rd_clk <= 1'b0;
+            r_state     <= R_IDLE;
+        end else begin
+            case (r_state)
+                R_IDLE: begin
+                    if (i_rd_start) begin
+                        o_rd_ready <= 1'b0;
+                        if (i_rd_len == 0 || i_rd_len > PAGE_WORDS) begin
+                            o_rd_done  <= 1'b1;
+                            o_rd_tick  <= 1'b1;
+                            r_state    <= R_IDLE;
+                        end else begin
+                            r_page  <= i_rd_ptr[8:4];
+                            r_idx   <= i_rd_ptr[3:0];
+                            r_total <= i_rd_len;
+                            o_rd_done  <= 1'b0;
+                            o_rd_idx   <= 4'b0;
+                            o_rd_tick  <= 1'b0;
+                            r_bram_rd_en <= 1'b1;
+                            r_state <= R_READ;
+                        end
+                    end else begin
+                        o_rd_ready <= 1'b1;
+                        o_rd_done  <= 1'b0;
+                        o_rd_ok    <= 1'b0;
+                        o_rd_idx   <= 4'b0;
+                        o_rd_tick  <= 1'b0;
+                    end
+                end
+
+                R_READ: begin
+                    r_bram_rd_addr <= mk_addr(r_page, r_idx);
+                    r_bram_rd_clk <= 1'b1;
+                    r_total <= r_total - 1;
+                    o_rd_tick <= 1'b0;
+                    r_state <= R_OUT;
+                end
+
+                R_OUT: begin
+                    o_rd_data <= r_bram_do;
+                    o_rd_idx  <= o_rd_idx + 1;
+                    o_rd_tick <= 1'b1;
+                    o_rd_ok   <= 1'b1;
+                    r_bram_rd_clk <= 1'b0;
+                    if (r_total == 0) begin
+                        o_rd_done <= 1'b1;
+                        r_state   <= R_IDLE;
+                    end else begin
+                        r_idx <= r_idx + 1;
                     end
                 end
             endcase

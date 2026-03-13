@@ -21,7 +21,7 @@
 
 `timescale 1ns/1ps
 
-module testbench;
+module tb_mem_data;
     localparam PAGE_WORDS = 16;
     localparam NUM_PAGES  = 32;
 
@@ -133,12 +133,21 @@ module testbench;
         rst = 1'b0;
 
         // testes
-        do_alloc(5'd3, 5'd2);   // espera ptr 0
-        do_alloc(5'd4, 5'd2);   // espera ptr 3
-        do_alloc(5'd10, 5'd2);  // deve ir para próxima página
-        do_alloc(5'd2, 5'd1);   // depende da tua regra de epoch
-        do_alloc(5'd0, 5'd2);   // inválido
-        do_alloc(5'd17, 5'd2);  // inválido
+        // do_alloc(5'd3, 5'd2);   // espera ptr 0
+        // do_alloc(5'd4, 5'd2);   // espera ptr 3
+        // do_alloc(5'd10, 5'd2);  // deve ir para próxima página
+        // do_alloc(5'd2, 5'd1);   // depende da tua regra de epoch
+        // do_alloc(5'd0, 5'd2);   // inválido
+        // do_alloc(5'd17, 5'd2);  // inválido
+
+        do_alloc(5'd1, 5'd0); // aloca 1 global, ptr 0
+        do_alloc(5'd1, 5'd0); // aloca 1 global, ptr 1
+        do_alloc(5'd1, 5'd1); // aloca 1 local, ptr 10
+        do_alloc(5'd2, 5'd1); // aloca 2 local, ptr 11
+        do_alloc(5'd1, 5'd0); // aloca 1 global, ptr 2
+        do_alloc(5'd1, 5'd1); // aloca 1 local, ptr 13
+        do_alloc(5'd1, 5'd2); // aloca 1 epoch 2, ptr 20
+        do_alloc(5'd15, 5'd1); // aloca 15 local, ptr 20
 
         repeat(10) @(posedge clk);
         $finish;
