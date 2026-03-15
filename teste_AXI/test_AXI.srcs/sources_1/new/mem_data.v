@@ -52,8 +52,8 @@ module mem_data #(
     output reg [31:0] o_rd_data,        // data read
     output reg        o_rd_ready,       // ready to receive data
     output reg  [4:0] o_rd_idx,         // read index (0 to PAGE_WORDS-1)
-    output reg        o_rd_done         // read done
-    output reg        o_rd_ok           // read successful (pointer valid)
+    output reg        o_rd_done,        // read done
+    output reg        o_rd_ok,          // read successful (pointer valid)
     output reg        o_rd_tick         // read tick (data valid)
 );
 
@@ -64,7 +64,7 @@ module mem_data #(
    // ---------------- BRAM interface wires ----------------
    wire [31:0] r_bram_do;
    reg  [31:0] r_bram_di;
-   reg  [8:0]  r_bram_wr_addr, bram_rd_addr;
+   reg  [8:0]  r_bram_wr_addr, r_bram_rd_addr;
    reg  [3:0]  r_bram_we;
    reg  r_bram_wr_en, r_bram_rd_en;
    reg  r_bram_wr_clk, r_bram_rd_clk;
@@ -233,6 +233,7 @@ module mem_data #(
                         r_state   <= R_IDLE;
                     end else begin
                         r_idx <= r_idx + 1;
+                        r_state <= R_READ;
                     end
                 end
             endcase
@@ -275,7 +276,7 @@ module mem_data #(
       .INIT(72'h000000000000000000),  // Initial values on output port
       .WRITE_MODE("WRITE_FIRST"),  // Specify "READ_FIRST" for same clock or synchronous clocks
                                    //   Specify "WRITE_FIRST for asynchronous clocks on ports
-      .INIT_00(256'h0000000000000000000000000000000000000000000000000000000000000000),
+      .INIT_00(256'h1111111100000000000000000000000000000000000000000000000000000000),
       .INIT_01(256'h0000000000000000000000000000000000000000000000000000000000000000),
       .INIT_02(256'h0000000000000000000000000000000000000000000000000000000000000000),
       .INIT_03(256'h0000000000000000000000000000000000000000000000000000000000000000),

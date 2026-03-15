@@ -54,6 +54,8 @@ module tb_mem_data;
     wire       o_rd_ready;
     wire [4:0] o_rd_idx;
     wire       o_rd_done;
+    wire       o_rd_ok;
+    wire       o_rd_tick;
 
     mem_data #(
         .PAGE_WORDS(PAGE_WORDS),
@@ -84,7 +86,9 @@ module tb_mem_data;
         .o_rd_data(o_rd_data),
         .o_rd_ready(o_rd_ready),
         .o_rd_idx(o_rd_idx),
-        .o_rd_done(o_rd_done)
+        .o_rd_done(o_rd_done),
+        .o_rd_ok(o_rd_ok),
+        .o_rd_tick(o_rd_tick)
     );
 
     // clock
@@ -112,6 +116,27 @@ module tb_mem_data;
         end
     endtask
 
+    task do_read;
+        input [8:0] ptr;
+        input [4:0] len;
+        begin
+            @(posedge clk);
+            i_rd_ptr   <= ptr;
+            i_rd_len   <= len;
+            i_rd_start <= 1'b1;
+
+            @(posedge clk);
+            i_rd_start <= 1'b0;
+
+            wait(o_rd_done == 1'b1);
+
+            $display("time=%0t ptr=%0d len=%0d ok=%0d",
+                     $time, ptr, len, o_rd_ok);
+
+            @(posedge clk);
+        end
+    endtask
+
     initial begin
         // defaults
         rst = 1'b1;
@@ -132,7 +157,7 @@ module tb_mem_data;
         repeat(3) @(posedge clk);
         rst = 1'b0;
 
-        // testes
+        // testes alloc
         // do_alloc(5'd3, 5'd2);   // espera ptr 0
         // do_alloc(5'd4, 5'd2);   // espera ptr 3
         // do_alloc(5'd10, 5'd2);  // deve ir para próxima página
@@ -140,14 +165,17 @@ module tb_mem_data;
         // do_alloc(5'd0, 5'd2);   // inválido
         // do_alloc(5'd17, 5'd2);  // inválido
 
-        do_alloc(5'd1, 5'd0); // aloca 1 global, ptr 0
-        do_alloc(5'd1, 5'd0); // aloca 1 global, ptr 1
-        do_alloc(5'd1, 5'd1); // aloca 1 local, ptr 10
-        do_alloc(5'd2, 5'd1); // aloca 2 local, ptr 11
-        do_alloc(5'd1, 5'd0); // aloca 1 global, ptr 2
-        do_alloc(5'd1, 5'd1); // aloca 1 local, ptr 13
-        do_alloc(5'd1, 5'd2); // aloca 1 epoch 2, ptr 20
-        do_alloc(5'd15, 5'd1); // aloca 15 local, ptr 20
+        // do_alloc(5'd1, 5'd0); // aloca 1 global, ptr 0
+        // do_alloc(5'd1, 5'd0); // aloca 1 global, ptr 1
+        // do_alloc(5'd1, 5'd1); // aloca 1 local, ptr 10
+        // do_alloc(5'd2, 5'd1); // aloca 2 local, ptr 11
+        // do_alloc(5'd1, 5'd0); // aloca 1 global, ptr 2
+        // do_alloc(5'd1, 5'd1); // aloca 1 local, ptr 13
+        // do_alloc(5'd1, 5'd2); // aloca 1 epoch 2, ptr 20
+        // do_alloc(5'd15, 5'd1); // aloca 15 local, ptr 20
+
+        // testes read
+        do_read(9'd0, 5'd2);
 
         repeat(10) @(posedge clk);
         $finish;
