@@ -41,13 +41,14 @@ module mem_data #(
     input  wire [8:0] i_wr_ptr,         // write pointer (page_idx + word_idx)
     input  wire [4:0] i_wr_len,         // length in words (32 bits) to write
     input  wire [31:0] i_wr_data,       // data to write
+    input  wire       i_wr_tick,        // write tick (data valid)
     output reg        o_wr_ready,       // ready to receive data
     output reg        o_wr_done,        // write done
     output reg        o_wr_ok,          // write successful
 
     // ---------- READ PAYLOAD / STREAM ----------
     input  wire       i_rd_start,       // start read payload
-    input  wire [9:0] i_rd_ptr,         // read pointer (page_idx + word_idx)
+    input  wire [8:0] i_rd_ptr,         // read pointer (page_idx + word_idx)
     input  wire [4:0] i_rd_len,         // length in words (32 bits) to read
     output reg [31:0] o_rd_data,        // data read
     output reg        o_rd_ready,       // ready to receive data
@@ -62,15 +63,10 @@ module mem_data #(
    reg [4:0] page_epoch[0:NUM_PAGES-1];
     
    // ---------------- BRAM interface wires ----------------
-   wire [31:0] r_bram_do;
+   wire [31:0] w_bram_do;
    reg  [31:0] r_bram_di;
    reg  [8:0]  r_bram_wr_addr, r_bram_rd_addr;
-   reg  [3:0]  r_bram_we;
    reg  r_bram_wr_en, r_bram_rd_en;
-   reg  r_bram_wr_clk, r_bram_rd_clk;
-    
-   // write enable por byte (32-bit => 4 lanes)
-   wire [3:0] bram_we = 4'b1111;
    
    // ---------------- Helpers ----------------
     function automatic [8:0] mk_addr;
@@ -90,14 +86,14 @@ module mem_data #(
     integer i;
 
     // ---------------- WRITE FSM ----------------
-    localparam W_IDLE = 2'd0, W_RUN = 2'd1;
+    localparam W_IDLE = 2'd0, W_WAIT = 2'd1, W_RUN = 2'd2;
     reg [1:0] w_state;
     reg [4:0] w_page;
     reg [3:0] w_idx;
     reg [3:0] w_total;
 
     // ---------------- READ FSM ----------------
-    localparam R_IDLE = 3'd0, R_READ = 3'd1, R_OUT = 3'd2;
+    localparam R_IDLE = 3'd0, R_READ = 3'd1, R_WAIT = 3'd2,R_OUT = 3'd3;
     reg [2:0] r_state;
     reg [4:0] r_page;
     reg [3:0] r_idx;
@@ -173,6 +169,62 @@ module mem_data #(
     end
 
     // ---------------- WRITE implementation ----------------
+    always @(posedge clk or posedge rst) begin
+        if (rst) begin
+            o_wr_ready <= 1'b0;
+            o_wr_done  <= 1'b0;
+            o_wr_ok    <= 1'b0;
+            r_bram_wr_en <= 1'b0;
+            w_state     <= W_IDLE;
+        end else begin
+            case (w_state)
+                W_IDLE: begin
+                    r_bram_wr_en <= 1'b0;
+                    o_wr_ok    <= 1'b0;
+                    if (i_wr_start) begin
+                        o_wr_ready <= 1'b0;
+                        if (i_wr_len == 0 || i_wr_len > PAGE_WORDS) begin
+                            o_wr_done  <= 1'b1;
+                            w_state    <= W_IDLE;
+                        end else begin
+                            w_page  <= i_wr_ptr[8:4];
+                            w_idx   <= i_wr_ptr[3:0];
+                            w_total <= i_wr_len;
+                            o_wr_done  <= 1'b0;
+                            w_state    <= W_WAIT;
+                        end
+                    end else begin
+                        o_wr_ready <= 1'b1;
+                        o_wr_done  <= 1'b0;
+                    end
+                end
+
+                W_WAIT: begin
+                    o_wr_ok <= 1'b0;
+                    r_bram_wr_en <= 1'b0;
+                    if (i_wr_tick) begin
+                        w_total <= w_total - 1;
+                        w_state <= W_RUN;
+                    end
+                end
+
+                W_RUN: begin
+                    r_bram_wr_addr <= mk_addr(w_page, w_idx);
+                    r_bram_di <= i_wr_data;
+                    r_bram_wr_en <= 1'b1;
+                    if (w_total == 0) begin
+                        o_wr_done <= 1'b1;
+                        o_wr_ok   <= 1'b1;
+                        w_state   <= W_IDLE;
+                    end else begin
+                        w_idx <= w_idx + 1;
+                        o_wr_ok <= 1'b1;
+                        w_state <= W_WAIT;
+                    end
+                end
+            endcase
+        end
+    end
 
     // ---------------- READ implementation ----------------
     always @(posedge clk or posedge rst) begin
@@ -184,11 +236,11 @@ module mem_data #(
             o_rd_ok     <= 1'b0;
             o_rd_tick   <= 1'b0;
             r_bram_rd_en <= 1'b0;
-            r_bram_rd_clk <= 1'b0;
             r_state     <= R_IDLE;
         end else begin
             case (r_state)
                 R_IDLE: begin
+                    r_bram_rd_en <= 1'b0;
                     if (i_rd_start) begin
                         o_rd_ready <= 1'b0;
                         if (i_rd_len == 0 || i_rd_len > PAGE_WORDS) begin
@@ -202,7 +254,6 @@ module mem_data #(
                             o_rd_done  <= 1'b0;
                             o_rd_idx   <= 4'b0;
                             o_rd_tick  <= 1'b0;
-                            r_bram_rd_en <= 1'b1;
                             r_state <= R_READ;
                         end
                     end else begin
@@ -216,18 +267,22 @@ module mem_data #(
 
                 R_READ: begin
                     r_bram_rd_addr <= mk_addr(r_page, r_idx);
-                    r_bram_rd_clk <= 1'b1;
+                    r_bram_rd_en <= 1'b1;
                     r_total <= r_total - 1;
                     o_rd_tick <= 1'b0;
-                    r_state <= R_OUT;
+                    r_state <= R_WAIT;
                 end
 
+                R_WAIT: begin
+                    r_state <= R_OUT;
+                end
+                
                 R_OUT: begin
-                    o_rd_data <= r_bram_do;
+                    o_rd_data <= w_bram_do;
+                    r_bram_rd_en <= 1'b0;
                     o_rd_idx  <= o_rd_idx + 1;
                     o_rd_tick <= 1'b1;
                     o_rd_ok   <= 1'b1;
-                    r_bram_rd_clk <= 1'b0;
                     if (r_total == 0) begin
                         o_rd_done <= 1'b1;
                         r_state   <= R_IDLE;
@@ -268,7 +323,7 @@ module mem_data #(
       .DEVICE("7SERIES"), // Target device: "7SERIES" 
       .WRITE_WIDTH(32),    // Valid values are 1-72 (37-72 only valid when BRAM_SIZE="36Kb")
       .READ_WIDTH(32),     // Valid values are 1-72 (37-72 only valid when BRAM_SIZE="36Kb")
-      .DO_REG(1),         // Optional output register (0 or 1)
+      .DO_REG(0),         // Optional output register (0 or 1)
       .INIT_FILE ("NONE"),
       .SIM_COLLISION_CHECK ("ALL"), // Collision check enable "ALL", "WARNING_ONLY",
                                     //   "GENERATE_X_ONLY" or "NONE" 
@@ -276,7 +331,7 @@ module mem_data #(
       .INIT(72'h000000000000000000),  // Initial values on output port
       .WRITE_MODE("WRITE_FIRST"),  // Specify "READ_FIRST" for same clock or synchronous clocks
                                    //   Specify "WRITE_FIRST for asynchronous clocks on ports
-      .INIT_00(256'h1111111100000000000000000000000000000000000000000000000000000000),
+      .INIT_00(256'h1111111100000000000000000000000000000000000000000000001110101010),
       .INIT_01(256'h0000000000000000000000000000000000000000000000000000000000000000),
       .INIT_02(256'h0000000000000000000000000000000000000000000000000000000000000000),
       .INIT_03(256'h0000000000000000000000000000000000000000000000000000000000000000),
@@ -356,13 +411,13 @@ module mem_data #(
       .DO(w_bram_do),         // Output read data port, width defined by READ_WIDTH parameter
       .DI(r_bram_di),         // Input write data port, width defined by WRITE_WIDTH parameter
       .RDADDR(r_bram_rd_addr), // Input read address, width defined by read port depth
-      .RDCLK(r_bram_rd_clk),   // 1-bit input read clock
+      .RDCLK(clk),   // 1-bit input read clock
       .RDEN(r_bram_rd_en),     // 1-bit input read port enable
       .REGCE(1'b1),   // 1-bit input read output register enable
-      .RST(r_rst),       // 1-bit input reset
-      .WE(r_bram_we),         // Input write enable, width defined by write port depth
+      .RST(rst),       // 1-bit input reset
+      .WE(4'b1111),         // Input write enable, width defined by write port depth
       .WRADDR(r_bram_wr_addr), // Input write address, width defined by write port depth
-      .WRCLK(r_bram_wr_clk),   // 1-bit input write clock
+      .WRCLK(clk),   // 1-bit input write clock
       .WREN(r_bram_wr_en)      // 1-bit input write port enable
    );
     
