@@ -178,6 +178,8 @@ module top(
                     else if (w_btn_u_pulse) begin
                         r_wr_ptr      <= r_saved_ptr;
                         r_wr_len      <= r_saved_len;
+                        // r_wr_ptr      <= 9'd0;
+                        // r_wr_len      <= 5'd2;
                         r_wr_data     <= 32'h00000001;
                         r_wr_count    <= 5'd0;
                         r_wr_start    <= 1'b1;
@@ -186,10 +188,10 @@ module top(
                     end
                     // BTN R = read burst
                     else if (w_btn_r_pulse) begin
-                        // r_rd_ptr      <= r_saved_ptr;
-                        // r_rd_len      <= r_saved_len;
-                        r_rd_ptr      <= 9'd0;
-                        r_rd_len      <= 5'd2;
+                        r_rd_ptr      <= r_saved_ptr;
+                        r_rd_len      <= r_saved_len;
+                        // r_rd_ptr      <= 9'd0;
+                        // r_rd_len      <= 5'd2;
                         r_rd_start    <= 1'b1;
                         r_state       <= T_RD_WAIT;
                     end
@@ -206,8 +208,9 @@ module top(
                 end
 
                 T_WR_WAIT: begin
-                    r_wr_start    <= 1'b0;
+                    r_wr_start <= 1'b0;
                     if (w_wr_done) begin
+                        r_wr_tick <= 1'b0;
                         r_state <= T_IDLE;
                     end
                     else if (w_wr_ok) begin
@@ -217,9 +220,12 @@ module top(
                 end
 
                 T_WR_NEXT: begin
-                    r_wr_data <= r_wr_data + 1;
-                    r_wr_tick <= 1'b1;
-                    r_state   <= T_WR_WAIT;
+                    if(!w_wr_ok) begin
+                        r_wr_data <= r_wr_data + 1;
+                        // r_wr_data <= 32'h00000010;
+                        r_wr_tick <= 1'b1;
+                        r_state   <= T_WR_WAIT;
+                    end
                 end
 
                 T_RD_WAIT: begin

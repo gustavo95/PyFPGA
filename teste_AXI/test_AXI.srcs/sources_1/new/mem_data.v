@@ -86,7 +86,7 @@ module mem_data #(
     integer i;
 
     // ---------------- WRITE FSM ----------------
-    localparam W_IDLE = 2'd0, W_WAIT = 2'd1, W_RUN = 2'd2;
+    localparam W_IDLE = 2'd0, W_WAIT_TICK = 2'd1, W_RUN = 2'd2, W_WAIT_OK = 2'd3;
     reg [1:0] w_state;
     reg [4:0] w_page;
     reg [3:0] w_idx;
@@ -191,7 +191,7 @@ module mem_data #(
                             w_idx   <= i_wr_ptr[3:0];
                             w_total <= i_wr_len;
                             o_wr_done  <= 1'b0;
-                            w_state    <= W_WAIT;
+                            w_state    <= W_WAIT_TICK;
                         end
                     end else begin
                         o_wr_ready <= 1'b1;
@@ -199,7 +199,7 @@ module mem_data #(
                     end
                 end
 
-                W_WAIT: begin
+                W_WAIT_TICK: begin
                     o_wr_ok <= 1'b0;
                     r_bram_wr_en <= 1'b0;
                     if (i_wr_tick) begin
@@ -219,7 +219,14 @@ module mem_data #(
                     end else begin
                         w_idx <= w_idx + 1;
                         o_wr_ok <= 1'b1;
-                        w_state <= W_WAIT;
+                        w_state <= W_WAIT_OK;
+                    end
+                end
+
+                W_WAIT_OK: begin
+                    o_wr_ok <= 1'b0;
+                    if (!i_wr_tick) begin
+                        w_state <= W_WAIT_TICK;
                     end
                 end
             endcase
