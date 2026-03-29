@@ -78,7 +78,7 @@ module mem_data #(
     endfunction
 
     // ---------------- ALLOC FSM ----------------
-    localparam A_IDLE = 2'd0, A_SCAN = 2'd1, A_DONE = 2'd2;
+    localparam A_IDLE = 2'd0, A_SCAN = 2'd1;
     reg [1:0] a_state;
     reg [4:0] a_scan;
     reg [4:0] a_len;

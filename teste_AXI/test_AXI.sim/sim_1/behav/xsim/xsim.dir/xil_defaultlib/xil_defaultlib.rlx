@@ -5,4 +5,6 @@ May 22 2024
 C:/Users/gusta/Documents/Doutorado_UFRN/Desenvolvimento/PyFPGA/teste_AXI/test_AXI.sim/sim_1/behav/xsim/glbl.v,1708598507,verilog,,,,glbl,,,,,,,,
 C:/Users/gusta/Documents/Doutorado_UFRN/Desenvolvimento/PyFPGA/teste_AXI/test_AXI.srcs/sim_1/new/tb_bram_only.v,1774219777,verilog,,,,tb_bram_only,,,,,,,,
 C:/Users/gusta/Documents/Doutorado_UFRN/Desenvolvimento/PyFPGA/teste_AXI/test_AXI.srcs/sim_1/new/tb_mem_data.v,1773607453,verilog,,,,tb_mem_data,,,,,,,,
+C:/Users/gusta/Documents/Doutorado_UFRN/Desenvolvimento/PyFPGA/teste_AXI/test_AXI.srcs/sim_1/new/tb_mem_object.v,1774788182,verilog,,,,tb_mem_object,,,,,,,,
 C:/Users/gusta/Documents/Doutorado_UFRN/Desenvolvimento/PyFPGA/teste_AXI/test_AXI.srcs/sources_1/new/mem_data.v,1773877970,verilog,,C:/Users/gusta/Documents/Doutorado_UFRN/Desenvolvimento/PyFPGA/teste_AXI/test_AXI.srcs/sim_1/new/tb_mem_data.v,,mem_data,,,,,,,,
+C:/Users/gusta/Documents/Doutorado_UFRN/Desenvolvimento/PyFPGA/teste_AXI/test_AXI.srcs/sources_1/new/mem_object.v,1774787466,verilog,,C:/Users/gusta/Documents/Doutorado_UFRN/Desenvolvimento/PyFPGA/teste_AXI/test_AXI.srcs/sim_1/new/tb_mem_object.v,,mem_object,,,,,,,,

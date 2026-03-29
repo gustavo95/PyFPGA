@@ -1,6 +1,7 @@
 # compile verilog/system verilog design source files
 verilog xil_defaultlib  \
-"../../../../test_AXI.srcs/sim_1/new/tb_bram_only.v" \
+"../../../../test_AXI.srcs/sources_1/new/mem_object.v" \
+"../../../../test_AXI.srcs/sim_1/new/tb_mem_object.v" \
 
 # compile glbl module
 verilog xil_defaultlib "glbl.v"
