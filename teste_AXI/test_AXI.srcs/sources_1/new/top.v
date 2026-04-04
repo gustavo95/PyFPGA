@@ -262,19 +262,17 @@ module top(
         if (i_btn_d) begin
             o_led <= 16'd0;
         end else begin
-            o_led[0]   <= w_alloc_exception;
-            o_led[1]   <= w_write_exception;
-            o_led[2]   <= w_read_exception;
-            o_led[8:3] <= 6'd0;
-
-            o_led[8:0] <= r_saved_idx;
-            o_led[9]   <= w_alloc_ok;
-            o_led[10]  <= w_write_ok;
-            o_led[11]  <= w_read_tick;
-            o_led[12]  <= w_alloc_done;
-            o_led[13]  <= w_write_done;
-            o_led[14]  <= w_read_done;
-            o_led[15]  <= (r_state != T_IDLE);
+            o_led[5:0] <= r_saved_idx[5:0];
+            o_led[6]   <= w_alloc_exception;
+            o_led[7]   <= w_write_exception;
+             o_led[8]   <= w_read_exception;
+            if (w_alloc_ok)  o_led[9]  <= 1'b1;
+            if (w_write_ok)  o_led[10] <= 1'b1;
+            if (w_read_tick)  o_led[11] <= 1'b1;
+            if (w_alloc_done) o_led[12] <= 1'b1;
+            if (w_write_done) o_led[13] <= 1'b1;
+            if (w_read_done)  o_led[14] <= 1'b1;
+            o_led[15]        <= (r_state != T_IDLE);
         end
     end
 
