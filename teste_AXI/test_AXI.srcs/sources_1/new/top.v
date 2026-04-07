@@ -51,13 +51,52 @@ module top(
 );
 
     // =========================================================
+    // Debounce buttons
+    // =========================================================
+    wire w_btn_l;
+    wire w_btn_r;
+    wire w_btn_u;
+    wire w_btn_d;
+    wire w_btn_c;
+
+    debounce db_btn_l (
+        .clk(clk),
+        .i_btn(i_btn_l),
+        .o_btn(w_btn_l)
+    );
+
+    debounce db_btn_r (
+        .clk(clk),
+        .i_btn(i_btn_r),
+        .o_btn(w_btn_r)
+    );
+
+    debounce db_btn_u (
+        .clk(clk),
+        .i_btn(i_btn_u),
+        .o_btn(w_btn_u)
+    );
+
+    debounce db_btn_d (
+        .clk(clk),
+        .i_btn(i_btn_d),
+        .o_btn(w_btn_d)
+    );
+
+    debounce db_btn_c (
+        .clk(clk),
+        .i_btn(i_btn_c),
+        .o_btn(w_btn_c)
+    );
+
+    // =========================================================
     // Clock divider
     // =========================================================
     wire [15:0] clk_div;
 
     clk_div clk_div_inst (
         .clk(clk),
-        .rst(i_btn_d),
+        .rst(w_btn_d),
         .clk_div(clk_div)
     );
 
@@ -115,9 +154,9 @@ module top(
     reg        r_btn_u_prev;
     reg        r_btn_r_prev;
 
-    wire w_btn_c_pulse = i_btn_c & ~r_btn_c_prev;
-    wire w_btn_u_pulse = i_btn_u & ~r_btn_u_prev;
-    wire w_btn_r_pulse = i_btn_r & ~r_btn_r_prev;
+    wire w_btn_c_pulse = w_btn_c & ~r_btn_c_prev;
+    wire w_btn_u_pulse = w_btn_u & ~r_btn_u_prev;
+    wire w_btn_r_pulse = w_btn_r & ~r_btn_r_prev;
 
     // =========================================================
     // Main FSM
@@ -133,23 +172,23 @@ module top(
     // =========================================================
     // Edge detect for buttons
     // =========================================================
-    always @(posedge clk or posedge i_btn_d) begin
-        if (i_btn_d) begin
+    always @(posedge clk or posedge w_btn_d) begin
+        if (w_btn_d) begin
             r_btn_c_prev <= 1'b0;
             r_btn_u_prev <= 1'b0;
             r_btn_r_prev <= 1'b0;
         end else begin
-            r_btn_c_prev <= i_btn_c;
-            r_btn_u_prev <= i_btn_u;
-            r_btn_r_prev <= i_btn_r;
+            r_btn_c_prev <= w_btn_c;
+            r_btn_u_prev <= w_btn_u;
+            r_btn_r_prev <= w_btn_r;
         end
     end
 
     // =========================================================
     // Test FSM
     // =========================================================
-    always @(posedge clk or posedge i_btn_d) begin
-        if (i_btn_d) begin
+    always @(posedge clk or posedge w_btn_d) begin
+        if (w_btn_d) begin
             r_state          <= T_IDLE;
 
             r_alloc_start    <= 1'b0;
@@ -258,16 +297,16 @@ module top(
     // =========================================================
     // LEDs
     // =========================================================
-    always @(posedge clk or posedge i_btn_d) begin
-        if (i_btn_d) begin
+    always @(posedge clk or posedge w_btn_d) begin
+        if (w_btn_d) begin
             o_led <= 16'd0;
         end else begin
             o_led[5:0] <= r_saved_idx[5:0];
             o_led[6]   <= w_alloc_exception;
             o_led[7]   <= w_write_exception;
-             o_led[8]   <= w_read_exception;
-            if (w_alloc_ok)  o_led[9]  <= 1'b1;
-            if (w_write_ok)  o_led[10] <= 1'b1;
+            o_led[8]   <= w_read_exception;
+            if (w_alloc_ok)   o_led[9]  <= 1'b1;
+            if (w_write_ok)   o_led[10] <= 1'b1;
             if (w_read_tick)  o_led[11] <= 1'b1;
             if (w_alloc_done) o_led[12] <= 1'b1;
             if (w_write_done) o_led[13] <= 1'b1;
@@ -324,7 +363,7 @@ module top(
 
     display7 d7(
         .clk_1KHz(clk_div[15]),
-        .rst(i_btn_d),
+        .rst(w_btn_d),
         .i_byte1(r_byte1_print),
         .i_byte2(r_byte2_print),
         .o_hex(o_hex),
@@ -336,7 +375,7 @@ module top(
     // =========================================================
     mem_heap mem_heap_inst (
         .clk(clk),
-        .rst(i_btn_d),
+        .rst(w_btn_d),
 
         .i_alloc_start(r_alloc_start),
         .i_alloc_epoch(r_alloc_epoch),

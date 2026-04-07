@@ -224,8 +224,8 @@ module mem_data #(
                 end
 
                 W_WAIT_OK: begin
-                    o_wr_ok <= 1'b0;
                     if (!i_wr_tick) begin
+                        o_wr_ok <= 1'b0;
                         w_state <= W_WAIT_TICK;
                     end
                 end

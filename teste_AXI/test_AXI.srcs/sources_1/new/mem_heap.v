@@ -107,11 +107,13 @@ module mem_heap(
                RO_SET_RD    = 4'd1,
                RO_WAIT_RD_0 = 4'd2,
                RO_WAIT_RD_1 = 4'd3,
-               RO_DONE_RD   = 4'd4,
-               RO_SET_WR    = 4'd5,
-               RO_WAIT_WR_0 = 4'd6,
-               RO_WAIT_WR_1 = 4'd7,
-               RO_DONE_WR   = 4'd8;
+               RO_WAIT_RD_2 = 4'd4,
+               RO_DONE_RD   = 4'd5,
+               RO_SET_WR    = 4'd6,
+               RO_WAIT_WR_0 = 4'd7,
+               RO_WAIT_WR_1 = 4'd8,
+               RO_WAIT_WR_2 = 4'd9,
+               RO_DONE_WR   = 4'd10;
 
     reg [3:0] rmo_state;
     reg       rmo_ready;
@@ -305,6 +307,9 @@ module mem_heap(
                     rmo_state <= RO_WAIT_RD_1;
                 end
                 RO_WAIT_RD_1: begin
+                    rmo_state <= RO_WAIT_RD_2;
+                end
+                RO_WAIT_RD_2: begin
                     rmo_state <= RO_DONE_RD;
                 end
                 RO_DONE_RD: begin
@@ -324,6 +329,9 @@ module mem_heap(
                     rmo_state <= RO_WAIT_WR_1;
                 end
                 RO_WAIT_WR_1: begin
+                    rmo_state <= RO_WAIT_WR_2;
+                end
+                RO_WAIT_WR_2: begin
                     rmo_state <= RO_DONE_WR;
                 end
                 RO_DONE_WR: begin
@@ -386,7 +394,7 @@ module mem_heap(
                 W_READ_OBJ: begin
                     rmo_wr_start <= 0;
                     if (rmo_wr_done) begin
-                        if (rmo_wr_type == 0) begin
+                        if (rmo_wr_type == 8'hFF) begin
                             o_write_done      <= 1;
                             o_write_exception <= 1;
                             w_state           <= W_IDLE;
@@ -491,7 +499,7 @@ module mem_heap(
                 R_READ_OBJ: begin
                     rmo_rd_start <= 0;
                     if (rmo_rd_done) begin
-                        if (rmo_rd_type == 0) begin
+                        if (rmo_rd_type == 8'hFF) begin
                             o_read_done      <= 1;
                             o_read_exception <= 1;
                             r_state          <= R_IDLE;
