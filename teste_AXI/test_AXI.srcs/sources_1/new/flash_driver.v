@@ -166,6 +166,7 @@ module flash_driver (
             o_done <= 1'b0;
 
             case (r_state)
+                // Estado de boot: reseta o controlador SPI via SRR
                 ST_BOOT_RESET: begin
                     o_ready     <= 1'b0;
                     o_busy      <= 1'b1;
@@ -174,6 +175,7 @@ module flash_driver (
                     launch_write(REG_SRR, SRR_RESET_VALUE, 4'hF, 1'b1);
                 end
 
+                // Estado de boot: configura o slave select do SPI
                 ST_BOOT_SSR: begin
                     o_ready     <= 1'b0;
                     o_busy      <= 1'b1;
@@ -182,6 +184,7 @@ module flash_driver (
                     launch_write(REG_SPI_SSR, SPI_SSR_ASSERT_SS, 4'hF, 1'b1);
                 end
 
+                // Estado de boot: configura o registrador de controle do SPI
                 ST_BOOT_SPICR: begin
                     o_ready     <= 1'b0;
                     o_busy      <= 1'b1;
@@ -190,6 +193,7 @@ module flash_driver (
                     launch_write(REG_SPICR, SPI_CR_INIT_VALUE, 4'hF, 1'b1);
                 end
 
+                // Estado ocioso: aguarda comando externo (i_start)
                 ST_IDLE: begin
                     o_ready       <= 1'b1;
                     o_busy        <= 1'b0;
@@ -213,6 +217,7 @@ module flash_driver (
                     end
                 end
 
+                // Inicia requisicao de escrita AXI (endereco e dados)
                 ST_WRITE_REQ: begin
                     o_busy <= 1'b1;
 
@@ -233,6 +238,7 @@ module flash_driver (
                     end
                 end
 
+                // Aguarda resposta da escrita AXI e transita para proximo estado
                 ST_WRITE_RESP: begin
                     o_busy <= 1'b1;
 
@@ -262,6 +268,7 @@ module flash_driver (
                     end
                 end
 
+                // Inicia requisicao de leitura AXI (endereco)
                 ST_READ_ADDR: begin
                     o_busy <= 1'b1;
 
@@ -272,6 +279,7 @@ module flash_driver (
                     end
                 end
 
+                // Aguarda dados da leitura AXI e finaliza
                 ST_READ_DATA: begin
                     o_busy <= 1'b1;
 
@@ -286,6 +294,7 @@ module flash_driver (
                     end
                 end
 
+                // Estado padrao: volta ao boot em caso de erro
                 default: begin
                     r_state <= ST_BOOT_RESET;
                 end
