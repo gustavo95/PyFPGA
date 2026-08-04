@@ -1,0 +1,355 @@
+﻿BYTECODE LINEAR PARA FPGA
+Todos os valores abaixo correspondem exatamente ao arquivo .bin.
+Cada word possui 32 bits e o arquivo usa byte order big-endian.
+Os índices word[....] são endereços de palavras escritos em hexadecimal.
+
+=== CABEÇALHO ===
+word[0000] = 0x50594650  magic = 'PYFP'
+word[0001] = 0x00000001  versão do formato binário
+word[0002] = 0x0000000D  tamanho do cabeçalho em palavras
+word[0003] = 0x00000001  quantidade de arquivos
+word[0004] = 0x00000002  quantidade de code objects
+word[0005] = 0x00000006  quantidade de globais
+word[0006] = 0x00000003  quantidade de builtins
+word[0007] = 0x00000024  quantidade total de instruções
+word[0008] = 0x0000000D  endereço da tabela de arquivos
+word[0009] = 0x0000000E  endereço da tabela de code objects
+word[000A] = 0x00000018  endereço da memória de instruções
+word[000B] = 0x00000060  endereço do pool de constantes
+word[000C] = 0x00000000  tamanho do pool em palavras
+
+=== TABELA DE ARQUIVOS ===
+word[000D] = 0x00000000  arquivo 0: code_object raiz = 0 (C:\Users\gusta\Documents\Doutorado_UFRN\Desenvolvimento\PyFPGA\Python\Teste\helloworld.py)
+
+=== TABELA DE CODE OBJECTS ===
+
+CODE_OBJECT 0: <module>
+word[000E] = 0x00000000  code_object 0: primeira instrução
+word[000F] = 0x0000001F  code_object 0: quantidade de instruções
+word[0010] = 0x00000000  code_object 0: quantidade de argumentos
+word[0011] = 0x00000000  code_object 0: quantidade de variáveis locais
+word[0012] = 0x00000004  code_object 0: tamanho máximo da pilha
+
+CODE_OBJECT 1: sum
+word[0013] = 0x0000001F  code_object 1: primeira instrução
+word[0014] = 0x00000005  code_object 1: quantidade de instruções
+word[0015] = 0x00000002  code_object 1: quantidade de argumentos
+word[0016] = 0x00000002  code_object 1: quantidade de variáveis locais
+word[0017] = 0x00000002  code_object 1: tamanho máximo da pilha
+
+=== MEMÓRIA DE INSTRUÇÕES ===
+CONTROL = opcode[31:24] | operand_type[23:20] | const_type[19:16] | auxiliar[15:0]
+
+CODE_OBJECT 0: <module>
+
+PC 0000: opcode 0x97 (RESUME)
+word[0018] = 0x97700000  CONTROL
+    opcode      = 0x97 (RESUME)
+    operand_type= 0x7 (IMMEDIATE)
+    const_type  = 0x0 (não se aplica)
+    auxiliar    = 0x0000
+word[0019] = 0x00000000  immediate = 0
+
+PC 0001: opcode 0x64 (LOAD_CONST)
+word[001A] = 0x64100000  CONTROL
+    opcode      = 0x64 (LOAD_CONST)
+    operand_type= 0x1 (CODE_OBJECT)
+    const_type  = 0x0 (não se aplica)
+    auxiliar    = 0x0000
+word[001B] = 0x00000001  code_object = 1 (sum)
+
+PC 0002: opcode 0x84 (MAKE_FUNCTION)
+word[001C] = 0x84700000  CONTROL
+    opcode      = 0x84 (MAKE_FUNCTION)
+    operand_type= 0x7 (IMMEDIATE)
+    const_type  = 0x0 (não se aplica)
+    auxiliar    = 0x0000
+word[001D] = 0x00000000  immediate = 0
+
+PC 0003: opcode 0x5A (STORE_NAME)
+word[001E] = 0x5A200000  CONTROL
+    opcode      = 0x5A (STORE_NAME)
+    operand_type= 0x2 (GLOBAL)
+    const_type  = 0x0 (não se aplica)
+    auxiliar    = 0x0000
+word[001F] = 0x00000000  global = 0 (sum)
+
+PC 0004: opcode 0x64 (LOAD_CONST)
+word[0020] = 0x64420001  CONTROL
+    opcode      = 0x64 (LOAD_CONST)
+    operand_type= 0x4 (CONST)
+    const_type  = 0x2 (INT)
+    pool_flag   = 0x0 (INLINE)
+    length      = 0x0001 (1 bytes)
+word[0021] = 0x00000000  constante inline = 0
+
+PC 0005: opcode 0x5A (STORE_NAME)
+word[0022] = 0x5A200000  CONTROL
+    opcode      = 0x5A (STORE_NAME)
+    operand_type= 0x2 (GLOBAL)
+    const_type  = 0x0 (não se aplica)
+    auxiliar    = 0x0000
+word[0023] = 0x00000001  global = 1 (a)
+
+PC 0006: opcode 0x64 (LOAD_CONST)
+word[0024] = 0x64420001  CONTROL
+    opcode      = 0x64 (LOAD_CONST)
+    operand_type= 0x4 (CONST)
+    const_type  = 0x2 (INT)
+    pool_flag   = 0x0 (INLINE)
+    length      = 0x0001 (1 bytes)
+word[0025] = 0x00000000  constante inline = 0
+
+PC 0007: opcode 0x5A (STORE_NAME)
+word[0026] = 0x5A200000  CONTROL
+    opcode      = 0x5A (STORE_NAME)
+    operand_type= 0x2 (GLOBAL)
+    const_type  = 0x0 (não se aplica)
+    auxiliar    = 0x0000
+word[0027] = 0x00000002  global = 2 (b)
+
+PC 0008: opcode 0x02 (PUSH_NULL)
+word[0028] = 0x02000000  CONTROL
+    opcode      = 0x02 (PUSH_NULL)
+    operand_type= 0x0 (NONE)
+    const_type  = 0x0 (não se aplica)
+    auxiliar    = 0x0000
+word[0029] = 0x00000000  sem operando
+
+PC 0009: opcode 0x65 (LOAD_NAME)
+word[002A] = 0x65200000  CONTROL
+    opcode      = 0x65 (LOAD_NAME)
+    operand_type= 0x2 (GLOBAL)
+    const_type  = 0x0 (não se aplica)
+    auxiliar    = 0x0000
+word[002B] = 0x00000000  global = 0 (sum)
+
+PC 000A: opcode 0x65 (LOAD_NAME)
+word[002C] = 0x65200000  CONTROL
+    opcode      = 0x65 (LOAD_NAME)
+    operand_type= 0x2 (GLOBAL)
+    const_type  = 0x0 (não se aplica)
+    auxiliar    = 0x0000
+word[002D] = 0x00000001  global = 1 (a)
+
+PC 000B: opcode 0x64 (LOAD_CONST)
+word[002E] = 0x64420001  CONTROL
+    opcode      = 0x64 (LOAD_CONST)
+    operand_type= 0x4 (CONST)
+    const_type  = 0x2 (INT)
+    pool_flag   = 0x0 (INLINE)
+    length      = 0x0001 (1 bytes)
+word[002F] = 0x00000002  constante inline = 2
+
+PC 000C: opcode 0xA6 (PRECALL)
+word[0030] = 0xA6700000  CONTROL
+    opcode      = 0xA6 (PRECALL)
+    operand_type= 0x7 (IMMEDIATE)
+    const_type  = 0x0 (não se aplica)
+    auxiliar    = 0x0000
+word[0031] = 0x00000002  immediate = 2
+
+PC 000D: opcode 0xAB (CALL)
+word[0032] = 0xAB700000  CONTROL
+    opcode      = 0xAB (CALL)
+    operand_type= 0x7 (IMMEDIATE)
+    const_type  = 0x0 (não se aplica)
+    auxiliar    = 0x0000
+word[0033] = 0x00000002  immediate = 2
+
+PC 000E: opcode 0x5A (STORE_NAME)
+word[0034] = 0x5A200000  CONTROL
+    opcode      = 0x5A (STORE_NAME)
+    operand_type= 0x2 (GLOBAL)
+    const_type  = 0x0 (não se aplica)
+    auxiliar    = 0x0000
+word[0035] = 0x00000003  global = 3 (c)
+
+PC 000F: opcode 0x02 (PUSH_NULL)
+word[0036] = 0x02000000  CONTROL
+    opcode      = 0x02 (PUSH_NULL)
+    operand_type= 0x0 (NONE)
+    const_type  = 0x0 (não se aplica)
+    auxiliar    = 0x0000
+word[0037] = 0x00000000  sem operando
+
+PC 0010: opcode 0x65 (LOAD_NAME)
+word[0038] = 0x65200000  CONTROL
+    opcode      = 0x65 (LOAD_NAME)
+    operand_type= 0x2 (GLOBAL)
+    const_type  = 0x0 (não se aplica)
+    auxiliar    = 0x0000
+word[0039] = 0x00000000  global = 0 (sum)
+
+PC 0011: opcode 0x65 (LOAD_NAME)
+word[003A] = 0x65200000  CONTROL
+    opcode      = 0x65 (LOAD_NAME)
+    operand_type= 0x2 (GLOBAL)
+    const_type  = 0x0 (não se aplica)
+    auxiliar    = 0x0000
+word[003B] = 0x00000002  global = 2 (b)
+
+PC 0012: opcode 0x64 (LOAD_CONST)
+word[003C] = 0x64420001  CONTROL
+    opcode      = 0x64 (LOAD_CONST)
+    operand_type= 0x4 (CONST)
+    const_type  = 0x2 (INT)
+    pool_flag   = 0x0 (INLINE)
+    length      = 0x0001 (1 bytes)
+word[003D] = 0x00000003  constante inline = 3
+
+PC 0013: opcode 0xA6 (PRECALL)
+word[003E] = 0xA6700000  CONTROL
+    opcode      = 0xA6 (PRECALL)
+    operand_type= 0x7 (IMMEDIATE)
+    const_type  = 0x0 (não se aplica)
+    auxiliar    = 0x0000
+word[003F] = 0x00000002  immediate = 2
+
+PC 0014: opcode 0xAB (CALL)
+word[0040] = 0xAB700000  CONTROL
+    opcode      = 0xAB (CALL)
+    operand_type= 0x7 (IMMEDIATE)
+    const_type  = 0x0 (não se aplica)
+    auxiliar    = 0x0000
+word[0041] = 0x00000002  immediate = 2
+
+PC 0015: opcode 0x5A (STORE_NAME)
+word[0042] = 0x5A200000  CONTROL
+    opcode      = 0x5A (STORE_NAME)
+    operand_type= 0x2 (GLOBAL)
+    const_type  = 0x0 (não se aplica)
+    auxiliar    = 0x0000
+word[0043] = 0x00000004  global = 4 (d)
+
+PC 0016: opcode 0x02 (PUSH_NULL)
+word[0044] = 0x02000000  CONTROL
+    opcode      = 0x02 (PUSH_NULL)
+    operand_type= 0x0 (NONE)
+    const_type  = 0x0 (não se aplica)
+    auxiliar    = 0x0000
+word[0045] = 0x00000000  sem operando
+
+PC 0017: opcode 0x65 (LOAD_NAME)
+word[0046] = 0x65200000  CONTROL
+    opcode      = 0x65 (LOAD_NAME)
+    operand_type= 0x2 (GLOBAL)
+    const_type  = 0x0 (não se aplica)
+    auxiliar    = 0x0000
+word[0047] = 0x00000000  global = 0 (sum)
+
+PC 0018: opcode 0x65 (LOAD_NAME)
+word[0048] = 0x65200000  CONTROL
+    opcode      = 0x65 (LOAD_NAME)
+    operand_type= 0x2 (GLOBAL)
+    const_type  = 0x0 (não se aplica)
+    auxiliar    = 0x0000
+word[0049] = 0x00000001  global = 1 (a)
+
+PC 0019: opcode 0x65 (LOAD_NAME)
+word[004A] = 0x65200000  CONTROL
+    opcode      = 0x65 (LOAD_NAME)
+    operand_type= 0x2 (GLOBAL)
+    const_type  = 0x0 (não se aplica)
+    auxiliar    = 0x0000
+word[004B] = 0x00000002  global = 2 (b)
+
+PC 001A: opcode 0xA6 (PRECALL)
+word[004C] = 0xA6700000  CONTROL
+    opcode      = 0xA6 (PRECALL)
+    operand_type= 0x7 (IMMEDIATE)
+    const_type  = 0x0 (não se aplica)
+    auxiliar    = 0x0000
+word[004D] = 0x00000002  immediate = 2
+
+PC 001B: opcode 0xAB (CALL)
+word[004E] = 0xAB700000  CONTROL
+    opcode      = 0xAB (CALL)
+    operand_type= 0x7 (IMMEDIATE)
+    const_type  = 0x0 (não se aplica)
+    auxiliar    = 0x0000
+word[004F] = 0x00000002  immediate = 2
+
+PC 001C: opcode 0x5A (STORE_NAME)
+word[0050] = 0x5A200000  CONTROL
+    opcode      = 0x5A (STORE_NAME)
+    operand_type= 0x2 (GLOBAL)
+    const_type  = 0x0 (não se aplica)
+    auxiliar    = 0x0000
+word[0051] = 0x00000005  global = 5 (e)
+
+PC 001D: opcode 0x64 (LOAD_CONST)
+word[0052] = 0x64400000  CONTROL
+    opcode      = 0x64 (LOAD_CONST)
+    operand_type= 0x4 (CONST)
+    const_type  = 0x0 (NONE)
+    pool_flag   = 0x0 (INLINE)
+    length      = 0x0000 (0 bytes)
+word[0053] = 0x00000000  constante inline = None
+
+PC 001E: opcode 0x53 (RETURN_VALUE)
+word[0054] = 0x53000000  CONTROL
+    opcode      = 0x53 (RETURN_VALUE)
+    operand_type= 0x0 (NONE)
+    const_type  = 0x0 (não se aplica)
+    auxiliar    = 0x0000
+word[0055] = 0x00000000  sem operando
+
+CODE_OBJECT 1: sum
+
+PC 0000: opcode 0x97 (RESUME)
+word[0056] = 0x97700000  CONTROL
+    opcode      = 0x97 (RESUME)
+    operand_type= 0x7 (IMMEDIATE)
+    const_type  = 0x0 (não se aplica)
+    auxiliar    = 0x0000
+word[0057] = 0x00000000  immediate = 0
+
+PC 0001: opcode 0x7C (LOAD_FAST)
+word[0058] = 0x7C500000  CONTROL
+    opcode      = 0x7C (LOAD_FAST)
+    operand_type= 0x5 (LOCAL)
+    const_type  = 0x0 (não se aplica)
+    auxiliar    = 0x0000
+word[0059] = 0x00000000  local = 0 (a)
+
+PC 0002: opcode 0x7C (LOAD_FAST)
+word[005A] = 0x7C500000  CONTROL
+    opcode      = 0x7C (LOAD_FAST)
+    operand_type= 0x5 (LOCAL)
+    const_type  = 0x0 (não se aplica)
+    auxiliar    = 0x0000
+word[005B] = 0x00000001  local = 1 (b)
+
+PC 0003: opcode 0x7A (BINARY_OP)
+word[005C] = 0x7A700000  CONTROL
+    opcode      = 0x7A (BINARY_OP)
+    operand_type= 0x7 (IMMEDIATE)
+    const_type  = 0x0 (não se aplica)
+    auxiliar    = 0x0000
+word[005D] = 0x00000000  immediate = 0 (+)
+
+PC 0004: opcode 0x53 (RETURN_VALUE)
+word[005E] = 0x53000000  CONTROL
+    opcode      = 0x53 (RETURN_VALUE)
+    operand_type= 0x0 (NONE)
+    const_type  = 0x0 (não se aplica)
+    auxiliar    = 0x0000
+word[005F] = 0x00000000  sem operando
+
+=== POOL DE CONSTANTES ===
+(vazio)
+
+=== TABELAS DE REFERÊNCIA ===
+GLOBALS
+0x00000000 = sum
+0x00000001 = a
+0x00000002 = b
+0x00000003 = c
+0x00000004 = d
+0x00000005 = e
+
+BUILTINS
+0x00000000 = print
+0x00000001 = len
+0x00000002 = range

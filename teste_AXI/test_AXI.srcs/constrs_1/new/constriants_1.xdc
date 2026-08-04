@@ -120,3 +120,9 @@ set_property PACKAGE_PIN F18 [get_ports qspi_dq3]
 set_property IOSTANDARD LVCMOS33 [get_ports qspi_dq3]
 set_property PACKAGE_PIN K19 [get_ports qspi_cs_n]
 set_property IOSTANDARD LVCMOS33 [get_ports qspi_cs_n]
+
+## USB-UART
+set_property PACKAGE_PIN B18 [get_ports usb_uart_rx]
+set_property IOSTANDARD LVCMOS33 [get_ports usb_uart_rx]
+set_property PACKAGE_PIN A18 [get_ports usb_uart_tx]
+set_property IOSTANDARD LVCMOS33 [get_ports usb_uart_tx]

@@ -6,6 +6,8 @@ from types import CodeType
 import dis
 import struct
 
+from py_bytecode_linear import printar_linearizacao
+
 def ler_binario_em_hex(arquivo):
     try:
         with open(arquivo, 'rb') as f:
@@ -187,5 +189,8 @@ code_obj = ler_pyc(caminho_arquivo_pyc)
 # Exibir o bytecode
 print("\nBytecode:")
 exibir_bytecode(code_obj)
+
+print("\nLinearização para a VM:")
+printar_linearizacao(code_obj)
 
 # decodificar_pyc("./Teste/__pycache__/helloworld.cpython-311.pyc")

@@ -1,7 +1,7 @@
 Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
 ---------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2024.1 (win64) Build 5076996 Wed May 22 18:37:14 MDT 2024
-| Date         : Sun Apr 19 18:20:28 2026
+| Date         : Mon Aug  3 20:10:18 2026
 | Host         : Alienware_Gus running 64-bit major release  (build 9200)
 | Command      : report_utilization -file top_utilization_synth.rpt -pb top_utilization_synth.pb
 | Design       : top
@@ -28,18 +28,20 @@ Table of Contents
 1. Slice Logic
 --------------
 
-+-------------------------+------+-------+------------+-----------+-------+
-|        Site Type        | Used | Fixed | Prohibited | Available | Util% |
-+-------------------------+------+-------+------------+-----------+-------+
-| Slice LUTs*             |   94 |     0 |          0 |     20800 |  0.45 |
-|   LUT as Logic          |   94 |     0 |          0 |     20800 |  0.45 |
-|   LUT as Memory         |    0 |     0 |          0 |      9600 |  0.00 |
-| Slice Registers         |  218 |     0 |          0 |     41600 |  0.52 |
-|   Register as Flip Flop |  218 |     0 |          0 |     41600 |  0.52 |
-|   Register as Latch     |    0 |     0 |          0 |     41600 |  0.00 |
-| F7 Muxes                |    0 |     0 |          0 |     16300 |  0.00 |
-| F8 Muxes                |    0 |     0 |          0 |      8150 |  0.00 |
-+-------------------------+------+-------+------------+-----------+-------+
++----------------------------+------+-------+------------+-----------+-------+
+|          Site Type         | Used | Fixed | Prohibited | Available | Util% |
++----------------------------+------+-------+------------+-----------+-------+
+| Slice LUTs*                |   83 |     0 |          0 |     20800 |  0.40 |
+|   LUT as Logic             |   75 |     0 |          0 |     20800 |  0.36 |
+|   LUT as Memory            |    8 |     0 |          0 |      9600 |  0.08 |
+|     LUT as Distributed RAM |    8 |     0 |            |           |       |
+|     LUT as Shift Register  |    0 |     0 |            |           |       |
+| Slice Registers            |  115 |     0 |          0 |     41600 |  0.28 |
+|   Register as Flip Flop    |  115 |     0 |          0 |     41600 |  0.28 |
+|   Register as Latch        |    0 |     0 |          0 |     41600 |  0.00 |
+| F7 Muxes                   |    0 |     0 |          0 |     16300 |  0.00 |
+| F8 Muxes                   |    0 |     0 |          0 |      8150 |  0.00 |
++----------------------------+------+-------+------------+-----------+-------+
 * Warning! The Final LUT count, after physical optimizations and full implementation, is typically lower. Run opt_design after synthesis, if not already completed, for a more realistic count.
 Warning! LUT value is adjusted to account for LUT combining.
 Warning! For any ECO changes, please run place_design if there are unplaced instances
@@ -58,9 +60,9 @@ Warning! For any ECO changes, please run place_design if there are unplaced inst
 | 0     |            _ |       Reset |            - |
 | 0     |          Yes |           - |            - |
 | 12    |          Yes |           - |          Set |
-| 118   |          Yes |           - |        Reset |
+| 81    |          Yes |           - |        Reset |
 | 0     |          Yes |         Set |            - |
-| 88    |          Yes |       Reset |            - |
+| 22    |          Yes |       Reset |            - |
 +-------+--------------+-------------+--------------+
 
 
@@ -93,7 +95,7 @@ Warning! For any ECO changes, please run place_design if there are unplaced inst
 +-----------------------------+------+-------+------------+-----------+-------+
 |          Site Type          | Used | Fixed | Prohibited | Available | Util% |
 +-----------------------------+------+-------+------------+-----------+-------+
-| Bonded IOB                  |   46 |     0 |          0 |       106 | 43.40 |
+| Bonded IOB                  |   32 |     0 |          0 |       106 | 30.19 |
 | Bonded IPADs                |    0 |     0 |          0 |        10 |  0.00 |
 | Bonded OPADs                |    0 |     0 |          0 |         4 |  0.00 |
 | PHY_CONTROL                 |    0 |     0 |          0 |         5 |  0.00 |
@@ -152,19 +154,21 @@ Warning! For any ECO changes, please run place_design if there are unplaced inst
 +----------+------+---------------------+
 | Ref Name | Used | Functional Category |
 +----------+------+---------------------+
-| FDCE     |  118 |        Flop & Latch |
-| FDRE     |   88 |        Flop & Latch |
-| LUT6     |   50 |                 LUT |
-| OBUF     |   28 |                  IO |
-| CARRY4   |   24 |          CarryLogic |
-| LUT3     |   21 |                 LUT |
-| LUT4     |   18 |                 LUT |
-| IBUF     |   18 |                  IO |
-| LUT2     |   16 |                 LUT |
+| FDCE     |   81 |        Flop & Latch |
+| LUT6     |   27 |                 LUT |
+| LUT4     |   26 |                 LUT |
+| FDRE     |   22 |        Flop & Latch |
+| OBUFT    |   16 |                  IO |
+| LUT5     |   14 |                 LUT |
+| OBUF     |   13 |                  IO |
+| LUT3     |   12 |                 LUT |
 | FDPE     |   12 |        Flop & Latch |
-| LUT5     |    8 |                 LUT |
-| LUT1     |    7 |                 LUT |
-| OBUFT    |    5 |                  IO |
+| LUT2     |   11 |                 LUT |
+| RAMD32   |   10 |  Distributed Memory |
+| CARRY4   |    9 |          CarryLogic |
+| LUT1     |    5 |                 LUT |
+| IBUF     |    3 |                  IO |
+| RAMS32   |    2 |  Distributed Memory |
 | BUFG     |    1 |               Clock |
 +----------+------+---------------------+
 
@@ -172,11 +176,9 @@ Warning! For any ECO changes, please run place_design if there are unplaced inst
 8. Black Boxes
 --------------
 
-+----------------+------+
-|    Ref Name    | Used |
-+----------------+------+
-| axi_quad_spi_0 |    1 |
-+----------------+------+
++----------+------+
+| Ref Name | Used |
++----------+------+
 
 
 9. Instantiated Netlists
