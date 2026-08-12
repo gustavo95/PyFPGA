@@ -52,7 +52,8 @@ module uart_unity
         output rx_full,                 // do not write data to FIFO
         output rx_empty,                // no data to read from FIFO
         output tx,                      // serial data out
-        output [DBITS-1:0] read_data    // data to Rx FIFO
+        output [DBITS-1:0] read_data,   // data to Rx FIFO
+        output tx_full                  // do not write data to FIFO
     );
     
     // Connection Signals
@@ -163,7 +164,7 @@ module uart_unity
 	        .write_data_in(write_data),
 	        .read_data_out(tx_fifo_out),
 	        .empty(tx_empty),
-	        .full()                // intentionally disconnected
+	        .full(tx_full)
 	      );
     
     // Signal Logic

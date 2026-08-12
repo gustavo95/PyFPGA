@@ -1,7 +1,7 @@
 Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
 ---------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2024.1 (win64) Build 5076996 Wed May 22 18:37:14 MDT 2024
-| Date         : Mon Aug  3 20:10:18 2026
+| Date         : Tue Aug 11 21:01:21 2026
 | Host         : Alienware_Gus running 64-bit major release  (build 9200)
 | Command      : report_utilization -file top_utilization_synth.rpt -pb top_utilization_synth.pb
 | Design       : top
@@ -31,13 +31,13 @@ Table of Contents
 +----------------------------+------+-------+------------+-----------+-------+
 |          Site Type         | Used | Fixed | Prohibited | Available | Util% |
 +----------------------------+------+-------+------------+-----------+-------+
-| Slice LUTs*                |   83 |     0 |          0 |     20800 |  0.40 |
-|   LUT as Logic             |   75 |     0 |          0 |     20800 |  0.36 |
-|   LUT as Memory            |    8 |     0 |          0 |      9600 |  0.08 |
-|     LUT as Distributed RAM |    8 |     0 |            |           |       |
+| Slice LUTs*                |  135 |     0 |          0 |     20800 |  0.65 |
+|   LUT as Logic             |  119 |     0 |          0 |     20800 |  0.57 |
+|   LUT as Memory            |   16 |     0 |          0 |      9600 |  0.17 |
+|     LUT as Distributed RAM |   16 |     0 |            |           |       |
 |     LUT as Shift Register  |    0 |     0 |            |           |       |
-| Slice Registers            |  115 |     0 |          0 |     41600 |  0.28 |
-|   Register as Flip Flop    |  115 |     0 |          0 |     41600 |  0.28 |
+| Slice Registers            |  146 |     0 |          0 |     41600 |  0.35 |
+|   Register as Flip Flop    |  146 |     0 |          0 |     41600 |  0.35 |
 |   Register as Latch        |    0 |     0 |          0 |     41600 |  0.00 |
 | F7 Muxes                   |    0 |     0 |          0 |     16300 |  0.00 |
 | F8 Muxes                   |    0 |     0 |          0 |      8150 |  0.00 |
@@ -59,8 +59,8 @@ Warning! For any ECO changes, please run place_design if there are unplaced inst
 | 0     |            _ |         Set |            - |
 | 0     |            _ |       Reset |            - |
 | 0     |          Yes |           - |            - |
-| 12    |          Yes |           - |          Set |
-| 81    |          Yes |           - |        Reset |
+| 14    |          Yes |           - |          Set |
+| 110   |          Yes |           - |        Reset |
 | 0     |          Yes |         Set |            - |
 | 22    |          Yes |       Reset |            - |
 +-------+--------------+-------------+--------------+
@@ -154,21 +154,21 @@ Warning! For any ECO changes, please run place_design if there are unplaced inst
 +----------+------+---------------------+
 | Ref Name | Used | Functional Category |
 +----------+------+---------------------+
-| FDCE     |   81 |        Flop & Latch |
-| LUT6     |   27 |                 LUT |
-| LUT4     |   26 |                 LUT |
+| FDCE     |  110 |        Flop & Latch |
+| LUT6     |   44 |                 LUT |
+| LUT4     |   31 |                 LUT |
+| LUT5     |   25 |                 LUT |
+| LUT3     |   24 |                 LUT |
 | FDRE     |   22 |        Flop & Latch |
+| RAMD32   |   20 |  Distributed Memory |
+| LUT2     |   20 |                 LUT |
 | OBUFT    |   16 |                  IO |
-| LUT5     |   14 |                 LUT |
+| FDPE     |   14 |        Flop & Latch |
 | OBUF     |   13 |                  IO |
-| LUT3     |   12 |                 LUT |
-| FDPE     |   12 |        Flop & Latch |
-| LUT2     |   11 |                 LUT |
-| RAMD32   |   10 |  Distributed Memory |
 | CARRY4   |    9 |          CarryLogic |
-| LUT1     |    5 |                 LUT |
+| LUT1     |    7 |                 LUT |
+| RAMS32   |    4 |  Distributed Memory |
 | IBUF     |    3 |                  IO |
-| RAMS32   |    2 |  Distributed Memory |
 | BUFG     |    1 |               Clock |
 +----------+------+---------------------+
 

@@ -118,6 +118,7 @@ module top(
     // =========================================================
     reg [7:0] r_byte1_print;
     reg [7:0] r_byte2_print;
+    wire [31:0] word_buffer;
 
     // =========================================================
     // Flash_driver interface
@@ -137,37 +138,18 @@ module top(
     // =========================================================
     // Uart wires
     // =========================================================
-    reg uart_read_tick;
-    reg uart_write_tick;
-    wire rx_full, rx_empty;
+    wire uart_read_tick;
+    wire uart_write_tick;
+    wire rx_full, rx_empty, tx_full;
     wire [7:0] uart_rec_data;
     wire [7:0] uart_send_data;
 
     // =========================================================
     // Display aplication
     // =========================================================
-    // always @(*) begin
-    //     r_byte1_print = r_last_rdata[7:0];
-    //     r_byte2_print = r_last_rdata[15:8];
-    // end
-
-    always @(posedge clk or posedge w_btn_d) begin
-        if (w_btn_d) begin
-            r_byte1_print <= 8'h00;
-            r_byte2_print <= 8'h00;
-            uart_read_tick <= 1'b0;
-            uart_write_tick <= 1'b0;
-        end
-        else begin
-            if (!rx_empty) begin
-                r_byte2_print <= r_byte1_print;
-                r_byte1_print <= uart_rec_data;
-                uart_read_tick <= 1'b1;
-            end
-            else begin
-                uart_read_tick <= 1'b0;
-            end
-        end
+    always @(*) begin
+        r_byte1_print = word_buffer[15:8];
+        r_byte2_print = word_buffer[7:0];
     end
 
     display7 d7(
@@ -189,7 +171,20 @@ module top(
         .rx_full(rx_full),
         .rx_empty(rx_empty),
         .tx(usb_uart_tx),
-        .read_data(uart_rec_data)
+        .read_data(uart_rec_data),
+        .tx_full(tx_full)
+    );
+
+    communication_controller comm_ctrl (
+        .clk(clk),
+        .reset(w_btn_d),
+        .uart_rec_data(uart_rec_data),
+        .rx_empty(rx_empty),
+        .tx_full(tx_full),
+        .uart_send_data(uart_send_data),
+        .uart_write_tick(uart_write_tick),
+        .uart_read_tick(uart_read_tick),
+        .word_buffer(word_buffer)
     );
 
 
